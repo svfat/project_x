@@ -2,8 +2,8 @@ FROM python:3.6-alpine
 ENV BUILD_REQUIREMENTS "gcc musl-dev libxml2-dev libxslt-dev libffi-dev"
 ENV REQUIREMENTS "libxml2 libxslt postgresql-dev"
 
-RUN mkdir -p /srv/nasdaq_analitics
-WORKDIR /srv/nasdaq_analitics
+RUN mkdir -p /srv/nasdaq_analytics
+WORKDIR /srv/nasdaq_analytics
 
 RUN pip install --upgrade pip
 COPY requirements.txt ./

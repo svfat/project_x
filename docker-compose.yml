@@ -25,3 +25,21 @@ services:
     volumes:
       - ./nasdaq_analytics:/srv/nasdaq_analytics
     entrypoint: ./scraper.py
+
+  web:
+    build: nasdaq_analytics
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_DB
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST=postgres
+      - FLASK_APP=web
+      - FLASK_ENV=development
+      - FLASK_RUN_PORT=8080
+    depends_on:
+      - postgres
+    volumes:
+      - ./nasdaq_analytics:/srv/nasdaq_analytics
+    ports:
+      - 8080:8080
+    entrypoint: flask run --host=0.0.0.0

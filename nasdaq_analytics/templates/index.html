@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Index{% endblock %}
+{% block body %}
+    <h1>Index</h1>
+    <ul>
+        {% for symbol in symbols %}
+            <li><a href="#">{{ symbol.symbol }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
