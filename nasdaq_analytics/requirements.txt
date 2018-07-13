@@ -1,0 +1,4 @@
+more-itertools==4.2.0
+psycopg2==2.7.5
+Scrapy==1.5.1
+SQLAlchemy==1.2.9

@@ -12,3 +12,16 @@ services:
     volumes:
       - "${POSTGRES_LOCAL_DIR}:/var/lib/postgresql/data"
       - ./postgres/sql/:/sql/
+
+  scraper:
+    build: nasdaq_analytics
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_DB
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - postgres
+    volumes:
+      - ./nasdaq_analytics:/srv/nasdaq_analytics
+    entrypoint: ./scraper.py
