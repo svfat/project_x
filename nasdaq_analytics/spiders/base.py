@@ -1,7 +1,7 @@
 """"""
 from typing import List
 
-from scrapy.spider import Spider
+from scrapy.spiders import Spider
 
 
 class BaseSpider(Spider):
