@@ -5,6 +5,7 @@ from uuid import UUID
 
 from more_itertools import chunked
 from scrapy.crawler import CrawlerProcess
+from sqlalchemy.dialects import postgresql
 
 from common import get_symbols_uuids
 from config import Config
@@ -30,15 +31,19 @@ def save_historical_prices(tmp_file: FileIO):
 
         symbol_to_uuid: Dict[str, UUID] = get_symbols_uuids(symbols)
 
-        session.bulk_insert_mappings(HistoricalPrices, (
-            dict(
-                symbol_id=symbol_to_uuid[historical_price['symbol']],
-                **{
-                    k: v
-                    for k, v in historical_price.items() if k != 'symbol'
-                }
-            )
-            for historical_price in historical_prices
-        ))
+        session.execute(
+            postgresql.insert(HistoricalPrices.__table__).on_conflict_do_nothing(),
+            [
+                dict(
+                    symbol_id=symbol_to_uuid[historical_price['symbol']],
+                    **{
+                        k: v
+                        for k, v in historical_price.items() if k != 'symbol'
+                    }
+                )
+                for historical_price in historical_prices
+
+            ]
+        )
 
         session.commit()
