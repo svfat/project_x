@@ -16,5 +16,5 @@ Base = automap_base()
 Base.prepare(engine, reflect=True)
 
 # assign auto-generated models here:
-Symbols = Base.classes.symbols
-HistoricalPrices = Base.classes.historical_prices
+Ticker = Base.classes.ticker
+HistoricalPrice = Base.classes.historical_price

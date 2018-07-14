@@ -3,18 +3,18 @@ from uuid import UUID
 
 from sqlalchemy.dialects import postgresql
 
-from db import session, Symbols
+from db import session, Ticker
 
 
-def get_symbols_uuids(symbols: Iterable[str]) -> Dict[str, UUID]:
+def get_ticker_uuids(symbols: Iterable[str]) -> Dict[str, UUID]:
     for symbol in symbols:
         session.execute(
-            postgresql.insert(Symbols.__table__).values(
+            postgresql.insert(Ticker.__table__).values(
                 symbol=symbol
             ).on_conflict_do_nothing()
         )
 
     return {
-        symbol.symbol: symbol.id
-        for symbol in session.query(Symbols).all()
+        ticker.symbol: ticker.id
+        for ticker in session.query(Ticker).all()
     }

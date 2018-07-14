@@ -56,7 +56,7 @@ class HistoricalPricesSpider(BaseSpider):
     allowed_domains = 'nasdaq.com'
 
     def start_requests(self):
-        for symbol in self.symbols:
+        for symbol in self.ticker:
             yield Request(f'https://www.nasdaq.com/symbol/{symbol}/historical', meta={'symbol': symbol})
 
     def parse(self, response: Response):

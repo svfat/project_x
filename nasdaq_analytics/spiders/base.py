@@ -5,8 +5,8 @@ from scrapy.spiders import Spider
 
 
 class BaseSpider(Spider):
-    symbols: List[str]
+    ticker: List[str]
 
-    def __init__(self, symbols: List[str], *args, **kwargs) -> None:
+    def __init__(self, ticker: List[str], *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.symbols = symbols
+        self.ticker = ticker
