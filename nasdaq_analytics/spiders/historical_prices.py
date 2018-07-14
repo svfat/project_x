@@ -1,6 +1,5 @@
 """"""
 import logging
-import re
 from datetime import datetime
 from typing import NamedTuple, Dict
 
@@ -9,8 +8,7 @@ from scrapy.http.response import Response
 from scrapy.selector import Selector
 
 from .base import BaseSpider
-
-only_numbers = re.compile('\D')
+from .common import only_numbers
 
 
 class RawRow(NamedTuple):
@@ -53,11 +51,10 @@ class ParsedRow(NamedTuple):
 
 class HistoricalPricesSpider(BaseSpider):
     name = 'historical_prices'
-    allowed_domains = 'nasdaq.com'
 
     def start_requests(self):
-        for symbol in self.ticker:
-            yield Request(f'https://www.nasdaq.com/symbol/{symbol}/historical', meta={'symbol': symbol})
+        for symbol in self.symbols:
+            yield Request(f'https://www.nasdaq.com/symbol/{symbol.lower()}/historical', meta={'symbol': symbol})
 
     def parse(self, response: Response):
         symbol = response.meta['symbol']
