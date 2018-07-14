@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects import postgresql
 
-from common import canonical_symbol
+from common import canonize_symbol
 from . import Base, session
 
 
@@ -18,7 +18,7 @@ class Ticker(Base):
         for symbol in symbols:
             session.execute(
                 postgresql.insert(Ticker.__table__).values(
-                    symbol=canonical_symbol(symbol)
+                    symbol=canonize_symbol(symbol)
                 ).on_conflict_do_nothing()
             )
 

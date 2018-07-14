@@ -1,7 +1,9 @@
 from typing import Dict, Any
 
+from flask import abort, redirect, url_for, request
 from sqlalchemy.orm import joinedload
 
+from common import canonize_symbol
 from db import session, Ticker
 from .helpers import views_helper
 
@@ -70,6 +72,10 @@ def index() -> Dict[str, Any]:
     },
 ])
 def historical_prices(symbol: str) -> Dict[str, Any]:
+    canonical_symbol = canonize_symbol(symbol)
+    if symbol != canonical_symbol:
+        abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))
+
     ticker = session.query(Ticker).options(
         joinedload(Ticker.historical_price_ordered_by_date)
     ).filter(
