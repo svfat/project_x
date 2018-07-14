@@ -2,6 +2,9 @@
 {% block title %}История цен на {{ ticker }}{% endblock %}
 {% block body %}
     <h1>История цен на {{ ticker }}</h1>
+    <ul>
+        <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку</a></li>
+    </ul>
     <table>
         <thead>
         <tr>
