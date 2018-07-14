@@ -2,44 +2,45 @@ version: '3.6'
 
 services:
   postgres:
-    build: ./postgres
+    image: postgres:10
     ports:
       - "6666:5432"
     environment:
-      - POSTGRES_USER
-      - POSTGRES_DB
-      - POSTGRES_PASSWORD
+      - POSTGRES_USER=nasdaq_scraper
+      - POSTGRES_DB=nasdaq_scraper
+      - POSTGRES_PASSWORD=nasdaq_scraper
     volumes:
-      - "${POSTGRES_LOCAL_DIR}:/var/lib/postgresql/data"
-      - ./postgres/sql/:/sql/
+      - /var/local/docker/postgres/nasdaq_scraper:/var/lib/postgresql/data
 
   scraper:
-    build: nasdaq_analytics
+    build: .
     environment:
-      - POSTGRES_USER
-      - POSTGRES_DB
-      - POSTGRES_PASSWORD
+      - POSTGRES_USER=nasdaq_scraper
+      - POSTGRES_DB=nasdaq_scraper
+      - POSTGRES_PASSWORD=nasdaq_scraper
       - POSTGRES_HOST=postgres
     depends_on:
       - postgres
     volumes:
-      - ./nasdaq_analytics:/srv/nasdaq_analytics
-    entrypoint: ./scraper.py
+      - ./nasdaq_analytics:/srv/project_x/nasdaq_analytics
+      - ./migrations:/srv/project_x/migrations
+    command: ./nasdaq_analytics/scraper.py
 
   web:
-    build: nasdaq_analytics
+    build: .
     environment:
-      - POSTGRES_USER
-      - POSTGRES_DB
-      - POSTGRES_PASSWORD
+      - POSTGRES_USER=nasdaq_scraper
+      - POSTGRES_DB=nasdaq_scraper
+      - POSTGRES_PASSWORD=nasdaq_scraper
       - POSTGRES_HOST=postgres
-      - FLASK_APP=web
+      - FLASK_APP=nasdaq_analytics/web
       - FLASK_ENV=development
       - FLASK_RUN_PORT=8080
     depends_on:
       - postgres
     volumes:
-      - ./nasdaq_analytics:/srv/nasdaq_analytics
+      - ./nasdaq_analytics:/srv/project_x/nasdaq_analytics
+      - ./migrations:/srv/project_x/migrations
     ports:
       - 8080:8080
-    entrypoint: flask run --host=0.0.0.0
+    command: flask run --host=0.0.0.0
