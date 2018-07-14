@@ -4,7 +4,7 @@ from flask import abort, redirect, url_for, request
 from sqlalchemy.orm import joinedload
 
 from common import canonize_symbol
-from db import session, Ticker
+from db import session, Ticker, InsiderTrade
 from .helpers import views_helper
 
 
@@ -93,5 +93,33 @@ def historical_prices(symbol: str) -> Dict[str, Any]:
                 'volume': historical_price.volume,
             }
             for historical_price in ticker.historical_price_ordered_by_date
+        ]
+    }
+
+
+def insider_trades(symbol: str) -> Dict[str, Any]:
+    canonical_symbol = canonize_symbol(symbol)
+    if symbol != canonical_symbol:
+        abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))
+
+    ticker = session.query(Ticker).options(
+        joinedload(Ticker.historical_price_ordered_by_date),
+        joinedload(InsiderTrade.insider_collection.name),
+    ).filter(
+        Ticker.symbol == symbol
+    ).first()
+
+    return {
+        'ticker': ticker.symbol,
+        'insider_trade': [
+            {
+                'date': insider_trade.date.isoformat(),
+                # 'open': historical_price.open,
+                # 'high': historical_price.high,
+                # 'low': historical_price.low,
+                # 'close': historical_price.close,
+                # 'volume': historical_price.volume,
+            }
+            for insider_trade in ticker.insider_trades_ordered_by_date
         ]
     }

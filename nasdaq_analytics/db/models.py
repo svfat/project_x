@@ -12,6 +12,7 @@ class Ticker(Base):
     __tablename__ = 'ticker'
 
     historical_price_ordered_by_date = relationship('HistoricalPrice', order_by='desc(HistoricalPrice.date)')
+    insider_trades_ordered_by_date = relationship('InsiderTrade', order_by='desc(InsiderTrade.date)')
 
     @staticmethod
     def insert_tickers(symbols: Iterable[str]) -> None:
