@@ -12,9 +12,8 @@ session = scoped_session(session_factory)
 # create automap base
 Base = automap_base()
 
+# import pre-declared models here:
+from .models import Ticker, HistoricalPrice, InsiderTuple, Insider, InsiderTrade
+
 # reflect
 Base.prepare(engine, reflect=True)
-
-# assign auto-generated models here:
-Ticker = Base.classes.ticker
-HistoricalPrice = Base.classes.historical_price

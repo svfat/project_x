@@ -13,5 +13,5 @@ RUN apk update --no-cache \
     && apk del $BUILD_REQUIREMENTS
 
 COPY . .
-RUN chmod +x nasdaq_analytics/scraper.py
+RUN chmod +x nasdaq_analytics/scraper.sh
 RUN chmod +x migrations/apply.sh

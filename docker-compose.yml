@@ -19,13 +19,14 @@ services:
       - POSTGRES_DB=nasdaq_scraper
       - POSTGRES_PASSWORD=nasdaq_scraper
       - POSTGRES_HOST=postgres
-      - TICKERS_FILE=/srv/project_x/tickers.txt
+      - TICKERS_FILE=/srv/project_x/input_example/tickers.txt
     depends_on:
       - postgres
     volumes:
       - ./nasdaq_analytics:/srv/project_x/nasdaq_analytics
       - ./migrations:/srv/project_x/migrations
-    command: ./nasdaq_analytics/scraper.py
+      - ./input_example:/srv/project_x/input_example
+    command: ./nasdaq_analytics/scraper.sh
 
   web:
     build: .
