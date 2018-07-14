@@ -7,7 +7,7 @@ from more_itertools import chunked
 from scrapy.crawler import CrawlerProcess
 from sqlalchemy.dialects import postgresql
 
-from common import get_ticker_uuids
+from common import get_ticker_uuids, load_tickers
 from config import Config
 from db import session, HistoricalPrice
 from spiders import HistoricalPricesSpider
@@ -20,7 +20,7 @@ def get_historical_prices(tmp_file: FileIO):
         'FEED_URI': f'file://{tmp_file.name}',
     })
 
-    process.crawl(HistoricalPricesSpider, ['AAPL', 'MSFT'])
+    process.crawl(HistoricalPricesSpider, load_tickers())
     process.start()
 
 
