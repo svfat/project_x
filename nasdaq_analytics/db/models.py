@@ -1,6 +1,7 @@
 from typing import Dict, List, Iterable, Any, NamedTuple
 from uuid import UUID
 
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects import postgresql
 
 from common import canonical_symbol
@@ -9,6 +10,8 @@ from . import Base, session
 
 class Ticker(Base):
     __tablename__ = 'ticker'
+
+    historical_price_ordered_by_date = relationship('HistoricalPrice', order_by='desc(HistoricalPrice.date)')
 
     @staticmethod
     def insert_tickers(symbols: Iterable[str]) -> None:

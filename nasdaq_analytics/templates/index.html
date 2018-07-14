@@ -3,8 +3,8 @@
 {% block body %}
     <h1>Index</h1>
     <ul>
-        {% for symbol in tickers %}
-            <li><a href="#">{{ symbol }}</a></li>
+        {% for ticker in tickers %}
+            <li><a href="{{ url_for('web_blueprint.historical_prices', symbol=ticker) }}">{{ ticker }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

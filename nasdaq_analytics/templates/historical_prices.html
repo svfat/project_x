@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}История цен на {{ ticker }}{% endblock %}
+{% block body %}
+    <h1>История цен на {{ ticker }}</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Цена открытия</th>
+            <th>Максимум за день</th>
+            <th>Минимум за день</th>
+            <th>Цена закрытия</th>
+            <th>Объём торгов за день</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for historical_price in historical_prices %}
+            <tr>
+                <td>{{ historical_price.date }}</td>
+                <td>{{ historical_price.open }}</td>
+                <td>{{ historical_price.high }}</td>
+                <td>{{ historical_price.low }}</td>
+                <td>{{ historical_price.close }}</td>
+                <td>{{ historical_price.volume }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
