@@ -2,7 +2,7 @@ from typing import Dict, Any
 
 from sqlalchemy.orm import joinedload
 
-from db import session, Ticker, HistoricalPrice
+from db import session, Ticker
 from .helpers import views_helper
 
 
@@ -16,7 +16,7 @@ from .helpers import views_helper
             },
         },
     },
-})
+}, parameters=[])
 def index() -> Dict[str, Any]:
     return {
         'tickers': [
@@ -55,11 +55,20 @@ def index() -> Dict[str, Any]:
                     'volume': {
                         'type': 'integer',
                     },
-                }
+                },
             },
         },
     },
-})
+}, parameters=[
+    {
+        'name': 'symbol',
+        'in': 'path',
+        'required': True,
+        'schema': {
+            'type': 'string',
+        },
+    },
+])
 def historical_prices(symbol: str) -> Dict[str, Any]:
     ticker = session.query(Ticker).options(
         joinedload(Ticker.historical_price_ordered_by_date)
