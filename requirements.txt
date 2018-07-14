@@ -1,4 +1,5 @@
 flask>=1.0,<1.1
+Werkzeug>=0.14,<0.15
 more-itertools>=4.2,<4.3
 psycopg2>=2.7,<2.8
 Scrapy>=1.5,<1.6

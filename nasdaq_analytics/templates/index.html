@@ -3,8 +3,8 @@
 {% block body %}
     <h1>Index</h1>
     <ul>
-        {% for ticker in tickers %}
-            <li><a href="#">{{ ticker.symbol }}</a></li>
+        {% for symbol in tickers %}
+            <li><a href="#">{{ symbol }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

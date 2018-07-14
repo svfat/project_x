@@ -1,10 +1,11 @@
 from flask import Flask
 
-from .blueprints import api_blueprint, web_blueprint
-from .api import index
-from .web import index
+from .helpers import views_helper
+from .routes import *
 
 
-def init_app(app: Flask) -> None:
-    app.register_blueprint(api_blueprint)
-    app.register_blueprint(web_blueprint)
+def init_app(app: Flask):
+    views_helper.init_app(app)
+
+
+__all__ = ['init_app']
