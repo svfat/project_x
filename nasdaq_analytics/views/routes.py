@@ -53,7 +53,7 @@ def index() -> Dict[str, Any]:
                         'type': 'number',
                     },
                     'volume': {
-                        'type': 'number',
+                        'type': 'integer',
                     },
                 }
             },
