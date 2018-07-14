@@ -1,7 +1,8 @@
 from functools import wraps
-from typing import Callable, Union, Any, Dict
+from typing import Callable, Union, Dict, Any
 
 from flask import Flask, Blueprint, render_template, jsonify
+from jsonschema import validate
 from werkzeug.routing import Rule
 
 
@@ -20,7 +21,7 @@ class ViewsHelper:
         self.app.register_blueprint(self.web_blueprint)
         self.app.register_blueprint(self.api_blueprint)
 
-    def route(self, rule: Union[str, Rule], template_name: str, **options):
+    def route(self, rule: Union[str, Rule], template_name: str, schema: Dict[str, Any], **options):
         def decorator(view_func: Callable[..., Dict]):
             @self.web_blueprint.route(rule, **options)
             @wraps(view_func)
@@ -30,6 +31,8 @@ class ViewsHelper:
             @self.api_blueprint.route(rule, **options)
             @wraps(view_func)
             def api_view_func(*args, **kwargs):
+                result = view_func(*args, **kwargs)
+                validate(result, schema)
                 return jsonify(**view_func(*args, **kwargs))
 
             return view_func
