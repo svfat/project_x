@@ -66,7 +66,9 @@ class ParsedRow(NamedTuple):
             last_date=datetime.strptime(raw_row.last_date.strip(), '%m/%d/%Y').strftime('%Y-%m-%d'),
             transaction_type=raw_row.transaction_type,
             owner_type=raw_row.owner_type,
-            shares_traded=int(only_numbers.sub('', raw_row.shares_traded)) if raw_row.shares_traded is not None else None,
+            shares_traded=(
+                int(only_numbers.sub('', raw_row.shares_traded)) if raw_row.shares_traded is not None else None
+            ),
             last_price=float(raw_row.last_price) if raw_row.last_price is not None else None,
             shares_held=int(only_numbers.sub('', raw_row.shares_held)) if raw_row.shares_held is not None else None,
             symbol=raw_row.symbol,
@@ -74,6 +76,7 @@ class ParsedRow(NamedTuple):
 
     def as_dict(self):
         return self._asdict()
+
 
 class InsiderTradesSpider(BaseSpider):
     name = 'insider_trades'
@@ -84,7 +87,9 @@ class InsiderTradesSpider(BaseSpider):
 
     def parse(self, response: Response):
         symbol = response.meta['symbol']
-        link_extractor = LinkExtractor(allow=rf'https://www\.nasdaq\.com/symbol/{symbol.lower()}/insider-trades\?page=\d+')
+        link_extractor = LinkExtractor(
+            allow=rf'https://www\.nasdaq\.com/symbol/{symbol.lower()}/insider-trades\?page=\d+'
+        )
         link: Link
         for link in link_extractor.extract_links(response):
             match_page_number: Optional[Match] = re.search(r'page=(\d+)', link.url)

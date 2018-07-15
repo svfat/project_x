@@ -57,6 +57,7 @@ def save_insider_trades(tmp_file: FileIO):
 
         session.commit()
 
+
 if __name__ == '__main__':
     with NamedTemporaryFile() as insider_trades_file:
         get_insider_trades(insider_trades_file)

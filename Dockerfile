@@ -1,5 +1,5 @@
 FROM python:3.6-alpine
-ENV BUILD_REQUIREMENTS "gcc musl-dev libxml2-dev libxslt-dev libffi-dev"
+ENV BUILD_REQUIREMENTS "git gcc musl-dev libxml2-dev libxslt-dev libffi-dev"
 ENV REQUIREMENTS "bash libxml2 libxslt postgresql-dev postgresql-client"
 
 RUN mkdir -p /srv/project_x

@@ -13,7 +13,7 @@ session = scoped_session(session_factory)
 Base = automap_base()
 
 # import pre-declared models here:
-from .models import Ticker, HistoricalPrice, InsiderTuple, Insider, InsiderTrade
+from .models import Ticker, HistoricalPrice, InsiderTuple, Insider, InsiderTrade  # noqa
 
 # reflect
 Base.prepare(engine, reflect=True)

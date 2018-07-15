@@ -1,3 +1,3 @@
 import re
 
-only_numbers = re.compile('\D')
+only_numbers = re.compile(r'\D')
