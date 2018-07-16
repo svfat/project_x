@@ -47,14 +47,21 @@ class ViewsHelper:
         def swagger_json():
             return jsonify(self.spec)
 
-    def _add_path_to_spec(self, rule: Union[str, Rule], schema: Dict[str, Any], parameters: List[Dict]):
+    def _add_path_to_spec(
+        self,
+        rule: Union[str, Rule],
+        schema: Dict[str, Any],
+        parameters: List[Dict],
+        description: str = '',
+    ):
         path_url = _convert_werkzeug_rule_to_openapi_url_template(rule)
         path_object = {
             'get': {
                 'parameters': parameters,
+                'description': description,
                 'responses': {
                     200: {
-                        'description': 'TODO',
+                        'description': 'Успешное получение данных.',
                         'content': {
                             "application/json": {
                                 'schema': schema
@@ -72,9 +79,10 @@ class ViewsHelper:
         template_name: str,
         schema: Dict[str, Any],
         parameters: List[Dict],
+        description: str = '',
         **options,
     ):
-        self._add_path_to_spec(rule, schema, parameters)
+        self._add_path_to_spec(rule, schema, parameters, description)
 
         def decorator(view_func: Callable[..., Dict]):
             @self.web_blueprint.route(rule, **options)

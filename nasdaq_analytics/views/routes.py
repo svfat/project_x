@@ -18,7 +18,7 @@ from .helpers import views_helper
             },
         },
     },
-}, parameters=[])
+}, parameters=[], description='Получить список всех акций, доступных в базе данных.')
 def index() -> Dict[str, Any]:
     return {
         'tickers': [
@@ -70,7 +70,7 @@ def index() -> Dict[str, Any]:
             'type': 'string',
         },
     },
-])
+], description='Получить цены на акцию за 3 месяца.')
 def historical_prices(symbol: str) -> Dict[str, Any]:
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
@@ -98,39 +98,42 @@ def historical_prices(symbol: str) -> Dict[str, Any]:
 
 
 @views_helper.route('/<string:symbol>/insider', template_name='insider_trades.html', schema={
-    'ticker': {
-        'type': 'string',
-    },
-    'insider_trades': {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'insider_name': {
-                    'type': 'string',
-                },
-                'relation': {
-                    'type': 'string',
-                },
-                'last_date': {
-                    'type': 'string',
-                },
-                'transaction_type': {
-                    'type': 'string',
-                },
-                'owner_type': {
-                    'type': 'string',
-                },
-                'shares_traded': {
-                    'type': 'integer',
-                },
-                'last_price': {
-                    'type': 'number',
-                },
-                'shares_held': {
-                    'type': 'integer',
-                },
+    'type': 'object',
+    'properties': {
+        'ticker': {
+            'type': 'string',
+        },
+        'insider_trades': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'insider_name': {
+                        'type': 'string',
+                    },
+                    'relation': {
+                        'type': 'string',
+                    },
+                    'last_date': {
+                        'type': 'string',
+                    },
+                    'transaction_type': {
+                        'type': 'string',
+                    },
+                    'owner_type': {
+                        'type': 'string',
+                    },
+                    'shares_traded': {
+                        'type': 'integer',
+                    },
+                    'last_price': {
+                        'type': 'number',
+                    },
+                    'shares_held': {
+                        'type': 'integer',
+                    },
 
+                },
             },
         },
     },
@@ -143,7 +146,7 @@ def historical_prices(symbol: str) -> Dict[str, Any]:
             'type': 'string',
         },
     },
-])
+], description='Получить данные о торгах инсайдеров.')
 def insider_trades(symbol: str) -> Dict[str, Any]:
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
