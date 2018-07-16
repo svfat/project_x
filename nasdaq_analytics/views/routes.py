@@ -6,19 +6,16 @@ from sqlalchemy.orm import joinedload
 from common import canonize_symbol
 from db import session, Ticker, InsiderTrade
 from .helpers import views_helper
+from .schemas import *
 
 
-@views_helper.route('/', template_name='index.html', schema={
-    'type': 'object',
-    'properties': {
-        'tickers': {
-            'type': 'array',
-            'items': {
-                'type': 'string',
-            },
-        },
-    },
-}, parameters=[], description='Получить список всех акций, доступных в базе данных.')
+@views_helper.route(
+    '/',
+    template_name='index.html',
+    schema=tickers_list_schema,
+    parameters=[],
+    description='Получить список всех акций, доступных в базе данных.',
+)
 def index() -> Dict[str, Any]:
     return {
         'tickers': [
@@ -28,49 +25,22 @@ def index() -> Dict[str, Any]:
     }
 
 
-@views_helper.route('/<string:symbol>', template_name='historical_prices.html', schema={
-    'type': 'object',
-    'properties': {
-        'ticker': {
-            'type': 'string',
-        },
-        'historical_prices': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'date': {
-                        'type': 'string',
-                    },
-                    'open': {
-                        'type': 'number',
-                    },
-                    'high': {
-                        'type': 'number',
-                    },
-                    'low': {
-                        'type': 'number',
-                    },
-                    'close': {
-                        'type': 'number',
-                    },
-                    'volume': {
-                        'type': 'integer',
-                    },
-                },
+@views_helper.route(
+    '/<string:symbol>',
+    template_name='historical_prices.html',
+    schema=historical_prices_schema,
+    parameters=[
+        {
+            'name': 'symbol',
+            'in': 'path',
+            'required': True,
+            'schema': {
+                'type': 'string',
             },
         },
-    },
-}, parameters=[
-    {
-        'name': 'symbol',
-        'in': 'path',
-        'required': True,
-        'schema': {
-            'type': 'string',
-        },
-    },
-], description='Получить цены на акцию за 3 месяца.')
+    ],
+    description='Получить цены на акцию за 3 месяца.',
+)
 def historical_prices(symbol: str) -> Dict[str, Any]:
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
@@ -97,56 +67,22 @@ def historical_prices(symbol: str) -> Dict[str, Any]:
     }
 
 
-@views_helper.route('/<string:symbol>/insider', template_name='insider_trades.html', schema={
-    'type': 'object',
-    'properties': {
-        'ticker': {
-            'type': 'string',
-        },
-        'insider_trades': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'insider_name': {
-                        'type': 'string',
-                    },
-                    'relation': {
-                        'type': 'string',
-                    },
-                    'last_date': {
-                        'type': 'string',
-                    },
-                    'transaction_type': {
-                        'type': 'string',
-                    },
-                    'owner_type': {
-                        'type': 'string',
-                    },
-                    'shares_traded': {
-                        'type': 'integer',
-                    },
-                    'last_price': {
-                        'type': 'number',
-                    },
-                    'shares_held': {
-                        'type': 'integer',
-                    },
-
-                },
+@views_helper.route(
+    '/<string:symbol>/insider',
+    template_name='insider_trades.html',
+    schema=insider_trades_schema,
+    parameters=[
+        {
+            'name': 'symbol',
+            'in': 'path',
+            'required': True,
+            'schema': {
+                'type': 'string',
             },
         },
-    },
-}, parameters=[
-    {
-        'name': 'symbol',
-        'in': 'path',
-        'required': True,
-        'schema': {
-            'type': 'string',
-        },
-    },
-], description='Получить данные о торгах инсайдеров.')
+    ],
+    description='Получить данные о торгах инсайдеров.',
+)
 def insider_trades(symbol: str) -> Dict[str, Any]:
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
