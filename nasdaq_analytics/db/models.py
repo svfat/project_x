@@ -8,7 +8,7 @@ from common import canonize_symbol
 from . import Base, session
 
 
-class Ticker(Base):
+class Ticker(Base):  # type: ignore
     __tablename__ = 'ticker'
 
     historical_price_ordered_by_date = relationship('HistoricalPrice', order_by='desc(HistoricalPrice.date)')
@@ -31,7 +31,7 @@ class Ticker(Base):
         }
 
 
-class HistoricalPrice(Base):
+class HistoricalPrice(Base):  # type: ignore
     __tablename__ = 'historical_price'
 
     @staticmethod
@@ -47,7 +47,7 @@ class InsiderTuple(NamedTuple):
     name: str
 
 
-class Insider(Base):
+class Insider(Base):  # type: ignore
     __tablename__ = 'insider'
 
     @staticmethod
@@ -61,7 +61,7 @@ class Insider(Base):
             )
 
 
-class InsiderTrade(Base):
+class InsiderTrade(Base):  # type: ignore
     __tablename__ = 'insider_trade'
 
     @staticmethod

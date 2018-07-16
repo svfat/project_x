@@ -30,17 +30,22 @@ class RawRow(NamedTuple):
 
     @staticmethod
     def from_selector(selector: Selector, symbol: str) -> 'RawRow':
-        insider_name: str = selector.xpath('./td[1]/a/text()').extract_first()
-        insider_link: str = selector.xpath('./td[1]/a/@href').extract_first()
-        insider_id: str = insider_link.strip('/').split('/')[-1] if insider_link else None
+        insider_name: Optional[str] = selector.xpath('./td[1]/a/text()').extract_first()
+        insider_link: Optional[str] = selector.xpath('./td[1]/a/@href').extract_first()
+        insider_id: Optional[str] = insider_link.strip('/').split('/')[-1] if insider_link else None
+
+        if insider_id is None or insider_name is None:
+            raise ValueError()
+
+        relation, last_date, transaction_type, owner_type, shares_traded, last_price, shares_held, *_ = (
+            td.xpath('./text()').extract_first()
+            for td in selector.xpath('./td')[1:8]
+        )
 
         return RawRow(
             insider_name,
             insider_id,
-            *(
-                td.xpath('./text()').extract_first()
-                for td in selector.xpath('./td')[1:]
-            ),
+            relation, last_date, transaction_type, owner_type, shares_traded, last_price, shares_held,
             symbol,
         )
 

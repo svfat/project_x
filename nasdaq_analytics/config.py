@@ -23,4 +23,4 @@ class Config:
     CHUNK_SIZE = int(getenv('CHUNK_SIZE', 1000))
     CONCURRENT_REQUESTS = getenv('CONCURRENT_REQUESTS', 16)
 
-    TICKERS_FILE = getenv('TICKERS_FILE')
+    TICKERS_FILE: str = getenv('TICKERS_FILE', '/var/input/tickers.txt')

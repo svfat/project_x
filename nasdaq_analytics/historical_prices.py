@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import json
-from io import FileIO
 from tempfile import NamedTemporaryFile
-from typing import Dict, Set
+from typing import Dict, Set, IO
 from uuid import UUID
 
 from more_itertools import chunked
@@ -14,7 +13,7 @@ from db import session, HistoricalPrice, Ticker
 from spiders import HistoricalPricesSpider
 
 
-def get_historical_prices(tmp_file: FileIO):
+def get_historical_prices(tmp_file: IO):
     process = CrawlerProcess({
         'CONCURRENT_REQUESTS': Config.CONCURRENT_REQUESTS,
         'FEED_FORMAT': 'jsonlines',
@@ -25,7 +24,7 @@ def get_historical_prices(tmp_file: FileIO):
     process.start()
 
 
-def save_historical_prices(tmp_file: FileIO):
+def save_historical_prices(tmp_file: IO):
     for chunk in chunked(tmp_file.readlines(), Config.CHUNK_SIZE):
         historical_prices = [json.loads(line) for line in chunk]
 

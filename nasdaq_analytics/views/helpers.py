@@ -10,9 +10,8 @@ _regex_werkzeug_rule_to_openapi_url_template = re.compile(r'<[^>:]*:?([^>]*)>')
 
 
 def _convert_werkzeug_rule_to_openapi_url_template(rule: Union[str, Rule]) -> str:
-    if hasattr(rule, 'rule'):
-        rule = rule.rule
-    return _regex_werkzeug_rule_to_openapi_url_template.sub(r'{\1}', rule)
+    _rule: str = rule.rule if isinstance(rule, Rule) else rule
+    return _regex_werkzeug_rule_to_openapi_url_template.sub(r'{\1}', _rule)
 
 
 class ViewsHelper:

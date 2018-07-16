@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import json
-from io import FileIO
 from tempfile import NamedTemporaryFile
-from typing import Set, Dict
+from typing import Set, Dict, IO
 from uuid import UUID
 
 from more_itertools import chunked
@@ -14,7 +13,7 @@ from db import session, Insider, InsiderTuple, Ticker, InsiderTrade
 from spiders import InsiderTradesSpider
 
 
-def get_insider_trades(tmp_file: FileIO):
+def get_insider_trades(tmp_file: IO):
     process = CrawlerProcess({
         'CONCURRENT_REQUESTS': Config.CONCURRENT_REQUESTS,
         'FEED_FORMAT': 'jsonlines',
@@ -25,7 +24,7 @@ def get_insider_trades(tmp_file: FileIO):
     process.start()
 
 
-def save_insider_trades(tmp_file: FileIO):
+def save_insider_trades(tmp_file: IO):
     for chunk in chunked(tmp_file.readlines(), Config.CHUNK_SIZE):
         insider_trades = [json.loads(line) for line in chunk]
 

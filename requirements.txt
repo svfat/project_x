@@ -6,3 +6,4 @@ Scrapy>=1.5,<1.6
 SQLAlchemy>=1.2,<1.3
 jsonschema>=2.6,<2.7
 git+https://gitlab.com/pycqa/flake8#egg=flake8
+mypy==0.620
