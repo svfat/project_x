@@ -162,9 +162,6 @@ def insider_trades_by_insider_name(symbol: str, insider_name: str) -> Dict[str, 
         InsiderTrade.insider.has(name=insider_name),
     ).order_by(desc(InsiderTrade.last_date))
 
-    import logging
-    logging.error(query)
-
     return {
         'ticker': ticker.symbol,
         'insider_trades': [
