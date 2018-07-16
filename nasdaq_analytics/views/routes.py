@@ -1,10 +1,12 @@
+from datetime import date
 from typing import Dict, Any
 
+from dateutil.relativedelta import relativedelta
 from flask import abort, redirect, url_for, request
 from sqlalchemy.orm import joinedload
 
 from common import canonize_symbol
-from db import session, Ticker, InsiderTrade
+from db import session, Ticker, InsiderTrade, HistoricalPrice
 from .helpers import views_helper
 from .schemas import *
 
@@ -46,11 +48,13 @@ def historical_prices(symbol: str) -> Dict[str, Any]:
     if symbol != canonical_symbol:
         abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))
 
-    ticker = session.query(Ticker).options(
-        joinedload(Ticker.historical_price_ordered_by_date)
-    ).filter(
+    ticker = session.query(Ticker).filter(
         Ticker.symbol == symbol
     ).first()
+
+    if ticker is None:
+        abort(404)
+
     return {
         'ticker': ticker.symbol,
         'historical_prices': [
@@ -62,7 +66,9 @@ def historical_prices(symbol: str) -> Dict[str, Any]:
                 'close': historical_price.close,
                 'volume': historical_price.volume,
             }
-            for historical_price in ticker.historical_price_ordered_by_date
+            for historical_price in ticker.historical_price_ordered_by_date.filter(
+                HistoricalPrice.date >= date.today() - relativedelta(months=3)
+            )
         ]
     }
 
@@ -110,3 +116,25 @@ def insider_trades(symbol: str) -> Dict[str, Any]:
             for insider_trade in ticker.insider_trades_ordered_by_date
         ]
     }
+
+
+@views_helper.route(
+    '/<string:symbol>/insider/<string:insider_name>',
+    template_name='insider_trades.html',
+    schema=insider_trades_schema,
+    parameters=[
+        {
+            'name': 'symbol',
+            'in': 'path',
+            'required': True,
+            'schema': {
+                'type': 'string',
+            },
+        },
+    ],
+    description='Получить данные о торгах инсайдеров.',
+)
+def insider_trades_by_insider_name(symbol: str, insider_name: str) -> Dict[str, Any]:
+    canonical_symbol = canonize_symbol(symbol)
+    if symbol != canonical_symbol:
+        abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))

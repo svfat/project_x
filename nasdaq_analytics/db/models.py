@@ -11,7 +11,11 @@ from . import Base, session
 class Ticker(Base):  # type: ignore
     __tablename__ = 'ticker'
 
-    historical_price_ordered_by_date = relationship('HistoricalPrice', order_by='desc(HistoricalPrice.date)')
+    historical_price_ordered_by_date = relationship(
+        'HistoricalPrice',
+        order_by='desc(HistoricalPrice.date)',
+        lazy='dynamic',
+    )
     insider_trades_ordered_by_date = relationship('InsiderTrade', order_by='desc(InsiderTrade.last_date)')
 
     @staticmethod
