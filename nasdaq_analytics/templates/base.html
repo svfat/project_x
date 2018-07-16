@@ -9,8 +9,15 @@
     <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
 </head>
 <body>
-<div class="container">
-    {% block body %}{% endblock %}
-</div>
+<main class="wrapper">
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+    <footer class="footer">
+        <section class="container">
+            <a href="{{ url_for('swagger_ui') }}">Документация к API</a>
+        </section>
+    </footer>
+</main>
 </body>
 </html>
