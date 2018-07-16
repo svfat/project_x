@@ -4,7 +4,7 @@ from flask import abort, redirect, url_for, request
 from sqlalchemy.orm import joinedload
 
 from common import canonize_symbol
-from db import session, Ticker, InsiderTrade, Insider
+from db import session, Ticker, InsiderTrade
 from .helpers import views_helper
 
 

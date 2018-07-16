@@ -3,7 +3,7 @@
 {% block body %}
     <h1>Торги инсайдеров для {{ ticker }}</h1>
     <ul>
-        <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку</a></li>
+        <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку всех акций</a></li>
         <li><a href="{{ url_for('web_blueprint.historical_prices', symbol=ticker) }}">Посмотреть историю цен на {{ ticker }}</a></li>
     </ul>
     <table>
