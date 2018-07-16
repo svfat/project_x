@@ -4,6 +4,7 @@
     <h1>История цен на {{ ticker }}</h1>
     <ul>
         <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку</a></li>
+        <li><a href="{{ url_for('web_blueprint.insider_trades', symbol=ticker) }}">Посмотреть торги инсайдеров для {{ ticker }}</a></li>
     </ul>
     <table>
         <thead>
@@ -19,12 +20,9 @@
         <tbody>
         {% for historical_price in historical_prices %}
             <tr>
-                <td>{{ historical_price.date }}</td>
-                <td>{{ historical_price.open }}</td>
-                <td>{{ historical_price.high }}</td>
-                <td>{{ historical_price.low }}</td>
-                <td>{{ historical_price.close }}</td>
-                <td>{{ historical_price.volume }}</td>
+                {% for key in historical_price %}
+                    <td>{{ historical_price[key] }}</td>
+                {% endfor %}
             </tr>
         {% endfor %}
         </tbody>

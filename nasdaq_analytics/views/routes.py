@@ -4,7 +4,7 @@ from flask import abort, redirect, url_for, request
 from sqlalchemy.orm import joinedload
 
 from common import canonize_symbol
-from db import session, Ticker, InsiderTrade
+from db import session, Ticker, InsiderTrade, Insider
 from .helpers import views_helper
 
 
@@ -97,28 +97,76 @@ def historical_prices(symbol: str) -> Dict[str, Any]:
     }
 
 
+@views_helper.route('/<string:symbol>/insider', template_name='insider_trades.html', schema={
+    'ticker': {
+        'type': 'string',
+    },
+    'insider_trades': {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'insider_name': {
+                    'type': 'string',
+                },
+                'relation': {
+                    'type': 'string',
+                },
+                'last_date': {
+                    'type': 'string',
+                },
+                'transaction_type': {
+                    'type': 'string',
+                },
+                'owner_type': {
+                    'type': 'string',
+                },
+                'shares_traded': {
+                    'type': 'integer',
+                },
+                'last_price': {
+                    'type': 'number',
+                },
+                'shares_held': {
+                    'type': 'integer',
+                },
+
+            },
+        },
+    },
+}, parameters=[
+    {
+        'name': 'symbol',
+        'in': 'path',
+        'required': True,
+        'schema': {
+            'type': 'string',
+        },
+    },
+])
 def insider_trades(symbol: str) -> Dict[str, Any]:
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
         abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))
 
     ticker = session.query(Ticker).options(
-        joinedload(Ticker.historical_price_ordered_by_date),
-        joinedload(InsiderTrade.insider_collection.name),
+        joinedload(Ticker.insider_trades_ordered_by_date, InsiderTrade.insider),
     ).filter(
         Ticker.symbol == symbol
     ).first()
 
     return {
         'ticker': ticker.symbol,
-        'insider_trade': [
+        'insider_trades': [
             {
-                'date': insider_trade.date.isoformat(),
-                # 'open': historical_price.open,
-                # 'high': historical_price.high,
-                # 'low': historical_price.low,
-                # 'close': historical_price.close,
-                # 'volume': historical_price.volume,
+                'insider_name': insider_trade.insider.name,
+                'relation': insider_trade.relation,
+                'last_date': insider_trade.last_date,
+                'transaction_type': insider_trade.transaction_type,
+                'owner_type': insider_trade.owner_type,
+                'shares_traded': insider_trade.shares_traded,
+                'last_price': insider_trade.last_price,
+                'shares_held': insider_trade.shares_held,
             }
             for insider_trade in ticker.insider_trades_ordered_by_date
         ]

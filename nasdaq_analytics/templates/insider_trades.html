@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Торги инсайдеров для {{ ticker }}{% endblock %}
+{% block body %}
+    <h1>Торги инсайдеров для {{ ticker }}</h1>
+    <ul>
+        <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку</a></li>
+        <li><a href="{{ url_for('web_blueprint.historical_prices', symbol=ticker) }}">Посмотреть историю цен на {{ ticker }}</a></li>
+    </ul>
+    <table>
+        <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Отношение</th>
+            <th>Дата</th>
+            <th>Действие</th>
+            <th>Способ владения</th>
+            <th>Участвовало в сделке</th>
+            <th>Цена</th>
+            <th>Осталось</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for insider_trade in insider_trades %}
+            <tr>
+                {% for key in insider_trade %}
+                    <td>{{ insider_trade[key] }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
