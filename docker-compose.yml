@@ -25,6 +25,7 @@ services:
     volumes:
       - ./nasdaq_analytics:/srv/project_x/nasdaq_analytics
       - ./migrations:/srv/project_x/migrations
+      - ./docs:/srv/project_x/docs
       - ./input_example:/var/input
     command: ./nasdaq_analytics/scraper.sh
 
