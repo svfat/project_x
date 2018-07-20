@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from config import Config
+from ..config import Config
 
 # create engine and session
 engine = create_engine(Config.DB_CONNECTION_STRING)

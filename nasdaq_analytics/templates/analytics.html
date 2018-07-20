@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Разница цен на {{ ticker }} от {{ date_from }} до {{ date_to }}{% endblock %}
+{% block body %}
+    <h1>Разница цен на {{ ticker }} от {{ date_from }} до {{ date_to }}</h1>
+    <ul>
+        <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку всех акций</a></li>
+        <li><a href="{{ url_for('web_blueprint.historical_prices', symbol=ticker) }}">Посмотреть историю цен на {{ ticker }}</a></li>
+        <li><a href="{{ url_for('web_blueprint.insider_trades', symbol=ticker) }}">Посмотреть торги инсайдеров для {{ ticker }}</a></li>
+    </ul>
+    <form method="get">
+        <fieldset>
+            <label for="date_from">От</label>
+            <input type="date" id="date_from" name="date_from" value="{{ date_from }}"/>
+            <label for="date_to">До</label>
+            <input type="date" name="date_to" id="date_to" value="{{ date_to }}"/>
+            <input class="button-primary" type="submit" value="Показать">
+        </fieldset>
+    </form>
+    <p>Цена открытия изменилась на {{ open_delta }}</p>
+    <p>Максимум за день изменился на {{ high_delta }}</p>
+    <p>Минимум за день изменился на {{ low_delta }}</p>
+    <p>Цена закрытия изменилась на {{ close_delta }}</p>
+{% endblock %}

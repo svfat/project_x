@@ -2,7 +2,7 @@
 import re
 from typing import List
 
-from config import Config
+from .config import Config
 
 
 def canonize_symbol(symbol: str) -> str:

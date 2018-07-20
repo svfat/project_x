@@ -86,3 +86,32 @@ insider_trades_schema = {
         },
     },
 }
+
+analytics_schema = {
+    'type': 'object',
+    'properties': {
+        'ticker': {
+            'type': 'string',
+        },
+        'date_from': {
+            'type': 'string',
+            'pattern': '[0-9]{4}-[0-9]{2}-[0-9]{2}',
+        },
+        'date_to': {
+            'type': 'string',
+            'pattern': '[0-9]{4}-[0-9]{2}-[0-9]{2}',
+        },
+        'open_delta': {
+            'type': 'number',
+        },
+        'high_delta': {
+            'type': 'number',
+        },
+        'low_delta': {
+            'type': 'number',
+        },
+        'close_delta': {
+            'type': 'number',
+        },
+    },
+}

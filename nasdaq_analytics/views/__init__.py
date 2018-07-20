@@ -1,7 +1,7 @@
 from flask import Flask
 
 from .helpers import views_helper
-from .routes import index, insider_trades # noqa
+from .routes import *  # noqa
 
 
 def init_app(app: Flask):

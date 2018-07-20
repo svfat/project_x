@@ -7,10 +7,10 @@ from uuid import UUID
 from more_itertools import chunked
 from scrapy.crawler import CrawlerProcess
 
-from common import load_tickers_file
-from config import Config
-from db import session, Insider, InsiderTuple, Ticker, InsiderTrade
-from spiders import InsiderTradesSpider
+from .common import load_tickers_file
+from .config import Config
+from .db import session, Insider, InsiderTuple, Ticker, InsiderTrade
+from .spiders import InsiderTradesSpider
 
 
 def get_insider_trades(tmp_file: IO):

@@ -7,10 +7,10 @@ from uuid import UUID
 from more_itertools import chunked
 from scrapy.crawler import CrawlerProcess
 
-from common import load_tickers_file
-from config import Config
-from db import session, HistoricalPrice, Ticker
-from spiders import HistoricalPricesSpider
+from .common import load_tickers_file
+from .config import Config
+from .db import session, HistoricalPrice, Ticker
+from .spiders import HistoricalPricesSpider
 
 
 def get_historical_prices(tmp_file: IO):

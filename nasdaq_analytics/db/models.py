@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects import postgresql
 
-from common import canonize_symbol
+from ..common import canonize_symbol
 from . import Base, session
 
 
