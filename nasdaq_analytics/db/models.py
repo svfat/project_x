@@ -56,7 +56,7 @@ class HistoricalPrice(Base):  # type: ignore
             historical_price_from.date.label('date_from'),
             historical_price_to.date.label('date_to'),
             (
-                getattr(historical_price_from, attribute_name) - getattr(historical_price_to, attribute_name)
+                getattr(historical_price_to, attribute_name) - getattr(historical_price_from, attribute_name)
             ).label('delta'),
             (historical_price_to.date - historical_price_from.date).label('duration'),
             func.min(historical_price_to.date - historical_price_from.date).over().label('min_duration'),
