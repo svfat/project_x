@@ -8,7 +8,7 @@ from sqlalchemy import asc, desc, func
 from sqlalchemy.orm import joinedload
 
 from ..common import canonize_symbol
-from ..db import session, Ticker, InsiderTrade, HistoricalPrice, Insider
+from ..db import session, Ticker, InsiderTrade, HistoricalPrice
 from .helpers import views_helper
 from .schemas import *
 
@@ -147,7 +147,7 @@ def insider_trades(symbol: str) -> Dict[str, Any]:
 def insider_trades_by_insider_name(symbol: str, insider_name: str) -> Dict[str, Any]:
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
-        abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))
+        abort(redirect(url_for(request.endpoint, symbol=canonical_symbol, insider_name=insider_name), 301))
 
     ticker = session.query(Ticker).filter(
         Ticker.symbol == symbol
@@ -218,7 +218,7 @@ def insider_trades_by_insider_name(symbol: str, insider_name: str) -> Dict[str, 
 def analytics(symbol: str):
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
-        abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))
+        abort(redirect(url_for(request.endpoint, symbol=canonical_symbol, **request.args), 301))
 
     ticker = session.query(Ticker).filter(
         Ticker.symbol == symbol
@@ -293,4 +293,85 @@ def analytics(symbol: str):
         'high_delta': historical_price_to.high - historical_price_from.high,
         'low_delta': historical_price_to.low - historical_price_from.low,
         'close_delta': historical_price_to.close - historical_price_from.close,
+    }
+
+
+@views_helper.route(
+    '/<string:symbol>/delta',
+    template_name='delta.html',
+    schema=delta_schema,
+    parameters=[
+        {
+            'name': 'symbol',
+            'in': 'path',
+            'required': True,
+            'schema': {
+                'type': 'string',
+            },
+        },
+        {
+            'name': 'value',
+            'in': 'query',
+            'required': False,
+            'schema': {
+                'type': 'number',
+            },
+        },
+        {
+            'name': 'type',
+            'in': 'query',
+            'required': False,
+            'schema': {
+                'type': 'string',
+                'enum': types_enum,
+            },
+        },
+    ],
+    description='Получить аналитические данные о минимальных периодах, когда цена изменилась больше, чем на N.',
+)
+def delta(symbol: str):
+    canonical_symbol = canonize_symbol(symbol)
+    if symbol != canonical_symbol:
+        abort(redirect(url_for(request.endpoint, symbol=canonical_symbol, **request.args), 301))
+
+    ticker = session.query(Ticker).filter(
+        Ticker.symbol == symbol
+    ).first()
+
+    if ticker is None:
+        abort(404)
+
+    try:
+        value = float(request.args.get('value', ''))
+    except ValueError:
+        value = None
+
+    value_type = request.args.get('type')
+
+    if value_type not in types_enum:
+        value_type = None
+
+    if value is None or value_type is None:
+        return {
+            'ticker': ticker.symbol,
+            'min_duration': None,
+            'type': value_type,
+            'value': value,
+        }
+
+    intervals = HistoricalPrice.get_intervals(value_type, value)
+
+    return {
+        'ticker': ticker.symbol,
+        'min_duration': intervals[0][4] if intervals else None,
+        'type': value_type,
+        'delta': value,
+        'intervals': [
+            {
+                'date_from': interval[0].isoformat(),
+                'date_to': interval[1].isoformat(),
+                'delta': interval[2],
+            }
+            for interval in intervals
+        ]
     }

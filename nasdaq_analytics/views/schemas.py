@@ -115,3 +115,43 @@ analytics_schema = {
         },
     },
 }
+
+types_enum = ['open', 'high', 'low', 'close']
+
+delta_schema = {
+    'type': 'object',
+    'properties': {
+        'ticker': {
+            'type': 'string',
+        },
+        'min_duration': {
+            'type': ['integer', 'null'],
+        },
+        'delta': {
+            'type': ['number', 'null'],
+        },
+        'type': {
+            'type': ['string', 'null'],
+            'enum': types_enum,
+        },
+        'intervals': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'date_from': {
+                        'type': 'string',
+                        'pattern': '[0-9]{4}-[0-9]{2}-[0-9]{2}',
+                    },
+                    'date_to': {
+                        'type': 'string',
+                        'pattern': '[0-9]{4}-[0-9]{2}-[0-9]{2}',
+                    },
+                    'delta': {
+                        'type': 'number',
+                    },
+                },
+            },
+        },
+    },
+}
