@@ -1,7 +1,8 @@
 from typing import Dict, List, Iterable, Any, NamedTuple
 from uuid import UUID
 
-from sqlalchemy.orm import relationship
+from sqlalchemy import func, text
+from sqlalchemy.orm import relationship, aliased
 from sqlalchemy.dialects import postgresql
 
 from ..common import canonize_symbol
@@ -44,6 +45,34 @@ class HistoricalPrice(Base):  # type: ignore
             postgresql.insert(HistoricalPrice.__table__).on_conflict_do_nothing(),
             historical_prices,
         )
+
+    @staticmethod
+    def get_intervals(attribute_name: str, min_delta: float):
+        historical_price_from = aliased(HistoricalPrice, name='historical_price_from')
+        historical_price_to = aliased(HistoricalPrice, name='historical_price_to')
+
+        # подзапрос, получающий все интервалы, с дельтой больше либо равной заданной
+        intervals_with_delta = session.query(
+            historical_price_from.date.label('date_from'),
+            historical_price_to.date.label('date_to'),
+            (
+                getattr(historical_price_from, attribute_name) - getattr(historical_price_to, attribute_name)
+            ).label('delta'),
+            (historical_price_to.date - historical_price_from.date).label('duration'),
+            func.min(historical_price_to.date - historical_price_from.date).over().label('min_duration'),
+        ).filter(
+            historical_price_from.ticker_id == historical_price_to.ticker_id,
+            historical_price_from.date < historical_price_to.date,
+            func.abs(
+                getattr(historical_price_from, attribute_name) - getattr(historical_price_to, attribute_name)
+            ) >= min_delta,
+        )
+
+        return session.query(
+            intervals_with_delta.subquery('intervals_with_delta')
+        ).filter(
+            text('duration = min_duration')
+        ).all()
 
 
 class InsiderTuple(NamedTuple):
