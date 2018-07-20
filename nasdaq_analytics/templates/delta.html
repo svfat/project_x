@@ -21,7 +21,7 @@
     {% if min_duration is not none %}
         <h2>Длительность минимального периода - {{ min_duration }}</h2>
     {% else %}
-        <h2>Таки периодов не найдено</h2>
+        <h2>Таких периодов не найдено</h2>
     {% endif %}
     {% for interval in intervals %}
         <p>C {{ interval.date_from }} до {{ interval.date_to }} {{ type }} изменилась на {{ interval.delta }}</p>
