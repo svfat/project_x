@@ -33,6 +33,14 @@ class ViewsHelper:
             },
             'paths': {},
         }
+        self.global_context = {
+            'price_types': {
+                'open': 'цена открытия',
+                'high': 'максимум за день',
+                'low': 'минимум за день',
+                'close': 'цена закрытия',
+            }
+        }
 
     def init_app(self, app: Flask):
         self.app = app
@@ -88,7 +96,9 @@ class ViewsHelper:
             @self.web_blueprint.route(rule, **options)
             @wraps(view_func)
             def web_view_func(*args, **kwargs):
-                return render_template(template_name, **view_func(*args, **kwargs))
+                context = self.global_context.copy()
+                context.update(view_func(*args, **kwargs))
+                return render_template(template_name, **context)
 
             @self.api_blueprint.route(rule, **options)
             @wraps(view_func)

@@ -10,10 +10,13 @@
             <input type="number" min="0" step="1" id="value" name="value" value="{{ delta }}"/>
             <label for="type">Тип цены</label>
             <select name="type" id="type">
-                <option value="open">цена открытия</option>
-                <option value="high">максимум за день</option>
-                <option value="low">минимум за день</option>
-                <option value="close">цена закрытия</option>
+                {% for price_type in price_types %}
+                    <option value="{{ price_type }}"
+                            {% if price_type == type %}
+                            selected="selected"
+                            {% endif %}
+                    >{{ price_types[price_type] }}</option>
+                {% endfor %}
             </select>
             <input class="button-primary" type="submit" value="Показать">
         </fieldset>
@@ -24,6 +27,6 @@
         <h2>Таких периодов не найдено</h2>
     {% endif %}
     {% for interval in intervals %}
-        <p>C {{ interval.date_from }} до {{ interval.date_to }} {{ type }} изменилась на {{ interval.delta }}</p>
+        <p>C {{ interval.date_from }} по {{ interval.date_to }} {{ price_types[type] }} изменилась на {{ interval.delta }}</p>
     {% endfor %}
 {% endblock %}
