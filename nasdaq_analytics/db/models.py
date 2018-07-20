@@ -47,7 +47,7 @@ class HistoricalPrice(Base):  # type: ignore
         )
 
     @staticmethod
-    def get_intervals(attribute_name: str, min_delta: float):
+    def get_intervals(ticker: Ticker, attribute_name: str, min_delta: float):
         historical_price_from = aliased(HistoricalPrice, name='historical_price_from')
         historical_price_to = aliased(HistoricalPrice, name='historical_price_to')
 
@@ -61,12 +61,14 @@ class HistoricalPrice(Base):  # type: ignore
             (historical_price_to.date - historical_price_from.date).label('duration'),
             func.min(historical_price_to.date - historical_price_from.date).over().label('min_duration'),
         ).filter(
+            historical_price_from.ticker_id == ticker.id,
+            historical_price_to.ticker_id == ticker.id,
             historical_price_from.ticker_id == historical_price_to.ticker_id,
             historical_price_from.date < historical_price_to.date,
             func.abs(
                 getattr(historical_price_from, attribute_name) - getattr(historical_price_to, attribute_name)
             ) >= min_delta,
-        )
+        ).order_by(historical_price_from.date)
 
         return session.query(
             intervals_with_delta.subquery('intervals_with_delta')

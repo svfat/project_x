@@ -359,7 +359,7 @@ def delta(symbol: str):
             'value': value,
         }
 
-    intervals = HistoricalPrice.get_intervals(value_type, value)
+    intervals = HistoricalPrice.get_intervals(ticker, value_type, value)
 
     return {
         'ticker': ticker.symbol,
