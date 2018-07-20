@@ -7,7 +7,7 @@
     <form method="get">
         <fieldset>
             <label for="value">Дельта (N)</label>
-            <input type="number" min="0" step="1" id="value" name="value" value="{{ delta }}"/>
+            <input type="number" min="0" id="value" name="value" value="{{ delta }}"/>
             <label for="type">Тип цены</label>
             <select name="type" id="type">
                 {% for price_type in price_types %}
