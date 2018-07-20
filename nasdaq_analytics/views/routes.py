@@ -1,6 +1,6 @@
 import logging
 from datetime import date, datetime
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from dateutil.relativedelta import relativedelta
 from flask import abort, redirect, url_for, request
@@ -230,11 +230,13 @@ def analytics(symbol: str):
     date_from_arg = request.args.get('date_from', '')
     date_to_arg = request.args.get('date_to', '')
 
+    date_from: Optional[date]
     try:
         date_from = datetime.strptime(date_from_arg, '%Y-%m-%d').date()
     except ValueError:
         date_from = None
 
+    date_to: Optional[date]
     try:
         date_to = datetime.strptime(date_to_arg, '%Y-%m-%d').date()
     except ValueError:
@@ -341,6 +343,7 @@ def delta(symbol: str):
     if ticker is None:
         abort(404)
 
+    value: Optional[float]
     try:
         value = float(request.args.get('value', ''))
     except ValueError:
