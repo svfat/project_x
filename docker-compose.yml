@@ -29,6 +29,10 @@ services:
       - ./input_example:/var/input
     command: ./nasdaq_analytics/scraper.sh
 
+  wait-for-postgres:
+    image: willwill/wait-for-it
+    command: postgres:5432 --timeout=360
+
   web:
     build: .
     environment:

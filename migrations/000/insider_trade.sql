@@ -7,7 +7,6 @@ CREATE TABLE insider (
 );
 
 CREATE TABLE insider_trade (
-  id               UUID PRIMARY KEY   DEFAULT gen_random_uuid(),
   insider_id       TEXT    NOT NULL REFERENCES insider (id) ON DELETE CASCADE,
   relation         TEXT,
   last_date        DATE    NOT NULL,
@@ -16,7 +15,8 @@ CREATE TABLE insider_trade (
   shares_traded    INTEGER NOT NULL,
   last_price       FLOAT,
   shares_held      INTEGER NOT NULL,
-  ticker_id        UUID    NOT NULL REFERENCES ticker (id) ON DELETE CASCADE
+  ticker_id        UUID    NOT NULL REFERENCES ticker (id) ON DELETE CASCADE,
+  PRIMARY KEY (insider_id, last_date, shares_traded, shares_held)
 );
 
 COMMIT;
