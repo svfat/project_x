@@ -1,0 +1,8 @@
+{% macro main_menu(ticker) -%}
+    <ul>
+        <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку всех акций</a></li>
+        <li><a href="{{ url_for('web_blueprint.historical_prices', symbol=ticker) }}">Посмотреть историю цен на {{ ticker }}</a></li>
+        <li><a href="{{ url_for('web_blueprint.insider_trades', symbol=ticker) }}">Посмотреть торги инсайдеров для {{ ticker }}</a></li>
+        <li><a href="{{ url_for('web_blueprint.analytics', symbol=ticker) }}">Посмотреть аналитику для {{ ticker }}</a></li>
+    </ul>
+{%- endmacro %}

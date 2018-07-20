@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import main_menu %}
 {% block title %}Разница цен на {{ ticker }} от {{ date_from }} до {{ date_to }}{% endblock %}
 {% block body %}
     <h1>Разница цен на {{ ticker }} от {{ date_from }} до {{ date_to }}</h1>
-    <ul>
-        <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку всех акций</a></li>
-        <li><a href="{{ url_for('web_blueprint.historical_prices', symbol=ticker) }}">Посмотреть историю цен на {{ ticker }}</a></li>
-        <li><a href="{{ url_for('web_blueprint.insider_trades', symbol=ticker) }}">Посмотреть торги инсайдеров для {{ ticker }}</a></li>
-    </ul>
+    {{ main_menu(ticker) }}
     <form method="get">
         <fieldset>
             <label for="date_from">От</label>

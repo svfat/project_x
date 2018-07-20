@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import main_menu %}
 {% block title %}Торги {{ insider_trades[0].insider_name }} для {{ ticker }}{% endblock %}
 {% block body %}
-    <h1>Торги  {{ insider_trades[0].insider_name }} для {{ ticker }}</h1>
-    <ul>
-        <li><a href="{{ url_for('web_blueprint.index') }}">Вернуться к списку всех акций</a></li>
-        <li><a href="{{ url_for('web_blueprint.historical_prices', symbol=ticker) }}">Посмотреть историю цен на {{ ticker }}</a></li>
-        <li><a href="{{ url_for('web_blueprint.insider_trades', symbol=ticker) }}">Посмотреть торги инсайдеров для {{ ticker }}</a></li>
-    </ul>
+    <h1>Торги {{ insider_trades[0].insider_name }} для {{ ticker }}</h1>
+    {{ main_menu(ticker) }}
     <table>
         <thead>
         <tr>
