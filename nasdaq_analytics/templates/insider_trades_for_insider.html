@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% from 'macros.html' import main_menu %}
-{% block title %}Торги {{ insider_trades[0].insider_name }} для {{ ticker }}{% endblock %}
+{% block title %}Торги {{ insider_name }} для {{ ticker }}{% endblock %}
 {% block body %}
-    <h1>Торги {{ insider_trades[0].insider_name }} для {{ ticker }}</h1>
+    <h1>Торги {{ insider_name }} для {{ ticker }}</h1>
     {{ main_menu(ticker) }}
     <table>
         <thead>

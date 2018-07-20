@@ -2,7 +2,7 @@
 import re
 from typing import List
 
-from .config import Config
+from config import Config
 
 
 def canonize_symbol(symbol: str) -> str:
@@ -17,7 +17,7 @@ def canonize_symbol(symbol: str) -> str:
 def load_tickers_file() -> List[str]:
     """Загрузить файл, содержащий название акции в каждой строчке.
 
-    :return: список называний акций в каноничном виде.
+    :return: список названий акций в каноничном виде
     """
     with open(Config.TICKERS_FILE, 'r') as tickers_file:
         return [

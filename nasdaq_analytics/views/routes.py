@@ -1,3 +1,4 @@
+"""Маршруты для веб-интерфейса и API."""
 import logging
 from datetime import date, datetime
 from typing import Dict, Any, Optional
@@ -7,10 +8,12 @@ from flask import abort, redirect, url_for, request
 from sqlalchemy import asc, desc, func
 from sqlalchemy.orm import joinedload
 
-from ..common import canonize_symbol
-from ..db import session, Ticker, InsiderTrade, HistoricalPrice
+from common import canonize_symbol
+from db import session, Ticker, InsiderTrade, HistoricalPrice
 from .helpers import views_helper
-from .schemas import *
+from .schemas import (
+    tickers_list_schema, historical_prices_schema, insider_trades_schema, analytics_schema, delta_schema, types_enum
+)
 
 
 @views_helper.route(
@@ -21,6 +24,10 @@ from .schemas import *
     description='Получить список всех акций, доступных в базе данных.',
 )
 def index() -> Dict[str, Any]:
+    """Функция, возвращающая списко всех акций в базе.
+
+    :return: словарь, содержащий список всех акций в базе
+    """
     return {
         'tickers': [
             ticker.symbol
@@ -46,6 +53,11 @@ def index() -> Dict[str, Any]:
     description='Получить цены на акцию за 3 месяца.',
 )
 def historical_prices(symbol: str) -> Dict[str, Any]:
+    """Функция, возвращающая цены на акцию за 3 месяца.
+
+    :param symbol: название акции
+    :return: словарь, содержащий название акции и цена за 3 месяца
+    """
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
         abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))
@@ -92,6 +104,11 @@ def historical_prices(symbol: str) -> Dict[str, Any]:
     description='Получить данные о торгах инсайдеров.',
 )
 def insider_trades(symbol: str) -> Dict[str, Any]:
+    """Функция, возвращающая данные о торгах инсайдеров за 3 месяца.
+
+    :param symbol: название акции
+    :return: словарь, содержащий название акции и данные о торгах инсайдеров
+    """
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
         abort(redirect(url_for(request.endpoint, symbol=canonical_symbol), 301))
@@ -142,9 +159,15 @@ def insider_trades(symbol: str) -> Dict[str, Any]:
             },
         },
     ],
-    description='Получить данные о торгах инсайдеров.',
+    description='Получить данные о торгах инсайдера.',
 )
 def insider_trades_by_insider_name(symbol: str, insider_name: str) -> Dict[str, Any]:
+    """Функция, возвращающая данные о торгах конкретного инсайдера.
+
+    :param symbol: название акции
+    :param insider_name: имя инсайдера
+    :return: словарь, содержащий название акции, имя инсайдера и данные о торгах инсайдеров
+    """
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
         abort(redirect(url_for(request.endpoint, symbol=canonical_symbol, insider_name=insider_name), 301))
@@ -165,6 +188,7 @@ def insider_trades_by_insider_name(symbol: str, insider_name: str) -> Dict[str, 
 
     return {
         'ticker': ticker.symbol,
+        'insider_name': insider_name,
         'insider_trades': [
             {
                 'insider_name': insider_trade.insider.name,
@@ -213,9 +237,14 @@ def insider_trades_by_insider_name(symbol: str, insider_name: str) -> Dict[str, 
             },
         },
     ],
-    description='Получить аналитические данные об исторических ценах.',
+    description='Получить аналитические данные об акции.',
 )
-def analytics(symbol: str):
+def analytics(symbol: str) -> Dict[str, Any]:
+    """Функция, возвращающая данные о разнице цен в заданных датах.
+
+    :param symbol: название акции
+    :return: словарь, содержащий аналитические данные об акции
+    """
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
         abort(redirect(url_for(request.endpoint, symbol=canonical_symbol, **request.args), 301))
@@ -331,7 +360,12 @@ def analytics(symbol: str):
     ],
     description='Получить аналитические данные о минимальных периодах, когда цена изменилась больше, чем на N.',
 )
-def delta(symbol: str):
+def delta(symbol: str) -> Dict[str, Any]:
+    """Функция, возвращающая данные о минимальных периодах, когда цена изменилась больше, чем на N.
+
+    :param symbol: название акции
+    :return: словарь, содержащий данные о минимальных периодах, когда цена изменилась больше, чем на N
+    """
     canonical_symbol = canonize_symbol(symbol)
     if symbol != canonical_symbol:
         abort(redirect(url_for(request.endpoint, symbol=canonical_symbol, **request.args), 301))

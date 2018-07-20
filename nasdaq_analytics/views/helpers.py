@@ -21,6 +21,7 @@ class ViewsHelper:
     api_blueprint: Blueprint
 
     spec: Dict[str, Any]
+    global_context: Dict[str, Any]
 
     def __init__(self):
         self.web_blueprint = Blueprint('web_blueprint', __name__, url_prefix='/')

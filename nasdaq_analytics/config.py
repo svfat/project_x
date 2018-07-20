@@ -4,9 +4,10 @@ from os import getenv
 
 class Config:
     """Класс, содержащий конфигурационные параметры."""
+
     #: тип базы данных
     DB_TYPE: str = 'postgres'
-    #: используемый драйвер бд
+    #: используемый драйвер базы данных
     DB_ENGINE: str = 'psycopg2'
 
     #: хост базы данных
@@ -26,7 +27,10 @@ class Config:
         f'{DB_TYPE}+{DB_ENGINE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_DB}'
     )
 
+    #: размер чанка, используемый при сохранении данных в базу. Может использоваться для тюнинга производительности
     CHUNK_SIZE = int(getenv('CHUNK_SIZE', 1000))
+    #: максимальное количество параллельных запросов при скрапинге
     CONCURRENT_REQUESTS = getenv('CONCURRENT_REQUESTS', 16)
 
+    #: путь к файлу с названиями акций (тикерами), по одной в каждой строке
     TICKERS_FILE: str = getenv('TICKERS_FILE', '/var/input/tickers.txt')

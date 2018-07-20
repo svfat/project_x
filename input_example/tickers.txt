@@ -2,3 +2,5 @@ AAPL
 MSFT
 CVX
 NKE
+ford
+GOOG

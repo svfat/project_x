@@ -51,6 +51,9 @@ insider_trades_schema = {
         'ticker': {
             'type': 'string',
         },
+        'insider_name': {
+            'type': 'string',
+        },
         'insider_trades': {
             'type': 'array',
             'items': {
