@@ -1,4 +1,4 @@
-""""""
+"""Модуль, содержащий "паука" для сбора исторических цен."""
 import logging
 from datetime import datetime
 from typing import NamedTuple, Dict
@@ -50,6 +50,7 @@ class ParsedRow(NamedTuple):
 
 
 class HistoricalPricesSpider(BaseSpider):
+    """"""
     name = 'historical_prices'
 
     def start_requests(self):
