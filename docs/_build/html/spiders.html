@@ -1,0 +1,642 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>spiders package &#8212; nasdaq_analytics  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="views package" href="views.html" />
+    <link rel="prev" title="insider_trades module" href="insider_trades.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="spiders-package">
+<h1>spiders package<a class="headerlink" href="#spiders-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-spiders.base">
+<span id="spiders-base-module"></span><h2>spiders.base module<a class="headerlink" href="#module-spiders.base" title="Permalink to this headline">¶</a></h2>
+<p>Модуль, содержащий базовый класс для “пауков” Scrapy.</p>
+<dl class="class">
+<dt id="spiders.base.BaseSpider">
+<em class="property">class </em><code class="descclassname">spiders.base.</code><code class="descname">BaseSpider</code><span class="sig-paren">(</span><em>symbols: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spiders/base.html#BaseSpider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.base.BaseSpider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">scrapy.spiders.Spider</span></code></p>
+<p>Базовый класс для “пауков”, содержащий общие методы.</p>
+<dl class="attribute">
+<dt id="spiders.base.BaseSpider.allowed_domains">
+<code class="descname">allowed_domains</code><em class="property"> = ['nasdaq.com', 'www.nasdaq.com']</em><a class="headerlink" href="#spiders.base.BaseSpider.allowed_domains" title="Permalink to this definition">¶</a></dt>
+<dd><p>разрешённые домены</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.base.BaseSpider.symbols">
+<code class="descname">symbols</code><em class="property"> = None</em><a class="headerlink" href="#spiders.base.BaseSpider.symbols" title="Permalink to this definition">¶</a></dt>
+<dd><p>список “символов” (наваний акций)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-spiders.common">
+<span id="spiders-common-module"></span><h2>spiders.common module<a class="headerlink" href="#module-spiders.common" title="Permalink to this headline">¶</a></h2>
+<p>Модуль, содержащий общие вещи для всех “пауков”.</p>
+<dl class="data">
+<dt id="spiders.common.only_numbers">
+<code class="descclassname">spiders.common.</code><code class="descname">only_numbers</code><em class="property"> = re.compile('\\D')</em><a class="headerlink" href="#spiders.common.only_numbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>регулярное выражение, которое отфильтровывает всё, кроме цифр</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-spiders.historical_prices">
+<span id="spiders-historical-prices-module"></span><h2>spiders.historical_prices module<a class="headerlink" href="#module-spiders.historical_prices" title="Permalink to this headline">¶</a></h2>
+<p>Модуль, содержащий “паука” для сбора исторических цен.</p>
+<dl class="class">
+<dt id="spiders.historical_prices.HistoricalPricesSpider">
+<em class="property">class </em><code class="descclassname">spiders.historical_prices.</code><code class="descname">HistoricalPricesSpider</code><span class="sig-paren">(</span><em>symbols: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spiders/historical_prices.html#HistoricalPricesSpider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.historical_prices.HistoricalPricesSpider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spiders.base.BaseSpider" title="spiders.base.BaseSpider"><code class="xref py py-class docutils literal notranslate"><span class="pre">spiders.base.BaseSpider</span></code></a></p>
+<p>“Паук”, для получения данных об исторических ценах.</p>
+<dl class="attribute">
+<dt id="spiders.historical_prices.HistoricalPricesSpider.name">
+<code class="descname">name</code><em class="property"> = 'historical_prices'</em><a class="headerlink" href="#spiders.historical_prices.HistoricalPricesSpider.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spiders.historical_prices.HistoricalPricesSpider.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><em>response: scrapy.http.response.Response</em><span class="sig-paren">)</span> &#x2192; Iterator[Dict]<a class="reference internal" href="_modules/spiders/historical_prices.html#HistoricalPricesSpider.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.historical_prices.HistoricalPricesSpider.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Обработчик http ответа от сайта.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>response</strong> – ответ, получаемый из Scrapy</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">итератор по словарям с результатами парсинга таблицы с нужными данными</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spiders.historical_prices.HistoricalPricesSpider.start_requests">
+<code class="descname">start_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterator[scrapy.http.request.Request]<a class="reference internal" href="_modules/spiders/historical_prices.html#HistoricalPricesSpider.start_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.historical_prices.HistoricalPricesSpider.start_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Итератор по первоначальным запросам.</p>
+<p>Делает запрос к странице с историческими ценам для каждой переданной акции.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spiders.historical_prices.ParsedRow">
+<em class="property">class </em><code class="descclassname">spiders.historical_prices.</code><code class="descname">ParsedRow</code><a class="reference internal" href="_modules/spiders/historical_prices.html#ParsedRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.historical_prices.ParsedRow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Именнованный кортеж, для хранения строки таблицы в распарсенном виде.</p>
+<dl class="method">
+<dt id="spiders.historical_prices.ParsedRow.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/spiders/historical_prices.html#ParsedRow.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.historical_prices.ParsedRow.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Прокси для приватного метода <cite>_asdict</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">именнованный кортеж, преобразованный в словарь</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.ParsedRow.close">
+<code class="descname">close</code><a class="headerlink" href="#spiders.historical_prices.ParsedRow.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.ParsedRow.date">
+<code class="descname">date</code><a class="headerlink" href="#spiders.historical_prices.ParsedRow.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="spiders.historical_prices.ParsedRow.from_raw">
+<em class="property">static </em><code class="descname">from_raw</code><span class="sig-paren">(</span><em>raw_row: spiders.historical_prices.RawRow</em>, <em>symbol: str</em><span class="sig-paren">)</span> &#x2192; spiders.historical_prices.ParsedRow<a class="reference internal" href="_modules/spiders/historical_prices.html#ParsedRow.from_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.historical_prices.ParsedRow.from_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Метод, получающий из “сырых” данных обработанные.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>raw_row</strong> – именнованный кортеж с нужными нам данными в сыром виде</li>
+<li><strong>symbol</strong> – название акции (“символ”), к которым относятся эти данные</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">именнованный кортеж с нужными данными в нужном формате, готовыми к отправке “наружу”</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.ParsedRow.high">
+<code class="descname">high</code><a class="headerlink" href="#spiders.historical_prices.ParsedRow.high" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.ParsedRow.low">
+<code class="descname">low</code><a class="headerlink" href="#spiders.historical_prices.ParsedRow.low" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.ParsedRow.open">
+<code class="descname">open</code><a class="headerlink" href="#spiders.historical_prices.ParsedRow.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.ParsedRow.symbol">
+<code class="descname">symbol</code><a class="headerlink" href="#spiders.historical_prices.ParsedRow.symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.ParsedRow.volume">
+<code class="descname">volume</code><a class="headerlink" href="#spiders.historical_prices.ParsedRow.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spiders.historical_prices.RawRow">
+<em class="property">class </em><code class="descclassname">spiders.historical_prices.</code><code class="descname">RawRow</code><a class="reference internal" href="_modules/spiders/historical_prices.html#RawRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.historical_prices.RawRow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Именнованный кортеж для хранения строки таблицы в “сыром виде”.</p>
+<dl class="attribute">
+<dt id="spiders.historical_prices.RawRow.close">
+<code class="descname">close</code><a class="headerlink" href="#spiders.historical_prices.RawRow.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.RawRow.date">
+<code class="descname">date</code><a class="headerlink" href="#spiders.historical_prices.RawRow.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="spiders.historical_prices.RawRow.from_selector">
+<em class="property">static </em><code class="descname">from_selector</code><span class="sig-paren">(</span><em>selector: scrapy.selector.unified.Selector</em><span class="sig-paren">)</span> &#x2192; spiders.historical_prices.RawRow<a class="reference internal" href="_modules/spiders/historical_prices.html#RawRow.from_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.historical_prices.RawRow.from_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Метод, получающий из селектора именнованный кортеж с нужными нам значениями.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>selector</strong> – селектор, из которого можно получить строку таблицы</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">результат парсинга этой строки таблицы</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.RawRow.high">
+<code class="descname">high</code><a class="headerlink" href="#spiders.historical_prices.RawRow.high" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.RawRow.low">
+<code class="descname">low</code><a class="headerlink" href="#spiders.historical_prices.RawRow.low" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.RawRow.open">
+<code class="descname">open</code><a class="headerlink" href="#spiders.historical_prices.RawRow.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.historical_prices.RawRow.volume">
+<code class="descname">volume</code><a class="headerlink" href="#spiders.historical_prices.RawRow.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-spiders.insider_trades">
+<span id="spiders-insider-trades-module"></span><h2>spiders.insider_trades module<a class="headerlink" href="#module-spiders.insider_trades" title="Permalink to this headline">¶</a></h2>
+<p>Модуль, содержащий “паука” для сбора информации о торгах инсайдеров.</p>
+<dl class="class">
+<dt id="spiders.insider_trades.InsiderTradesSpider">
+<em class="property">class </em><code class="descclassname">spiders.insider_trades.</code><code class="descname">InsiderTradesSpider</code><span class="sig-paren">(</span><em>symbols: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spiders/insider_trades.html#InsiderTradesSpider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.insider_trades.InsiderTradesSpider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spiders.base.BaseSpider" title="spiders.base.BaseSpider"><code class="xref py py-class docutils literal notranslate"><span class="pre">spiders.base.BaseSpider</span></code></a></p>
+<p>“Паук”, для получения данных о торгах инсайдеров.</p>
+<dl class="attribute">
+<dt id="spiders.insider_trades.InsiderTradesSpider.name">
+<code class="descname">name</code><em class="property"> = 'insider_trades'</em><a class="headerlink" href="#spiders.insider_trades.InsiderTradesSpider.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spiders.insider_trades.InsiderTradesSpider.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><em>response: scrapy.http.response.Response</em><span class="sig-paren">)</span> &#x2192; Iterator[Union[scrapy.http.request.Request, typing.Dict]]<a class="reference internal" href="_modules/spiders/insider_trades.html#InsiderTradesSpider.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.insider_trades.InsiderTradesSpider.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Обработчик http ответа от сайта.</p>
+<p>Парсит таблицы с данными и делает запросы к следующим страницам.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>response</strong> – ответ, получаемый из Scrapy</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">итератор по словарям с результатами парсинга и по запросам к следующим страницам</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spiders.insider_trades.InsiderTradesSpider.start_requests">
+<code class="descname">start_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterator[scrapy.http.request.Request]<a class="reference internal" href="_modules/spiders/insider_trades.html#InsiderTradesSpider.start_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.insider_trades.InsiderTradesSpider.start_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Итератор по первоначальным запросам.</p>
+<p>Делает запрос к странице с историческими ценам для каждой переданной акции.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="data">
+<dt id="spiders.insider_trades.MAX_PAGE">
+<code class="descclassname">spiders.insider_trades.</code><code class="descname">MAX_PAGE</code><em class="property"> = 10</em><a class="headerlink" href="#spiders.insider_trades.MAX_PAGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>сколько страниц нужно спарсить</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="spiders.insider_trades.ParsedRow">
+<em class="property">class </em><code class="descclassname">spiders.insider_trades.</code><code class="descname">ParsedRow</code><a class="reference internal" href="_modules/spiders/insider_trades.html#ParsedRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.insider_trades.ParsedRow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Именнованный кортеж, для хранения строки таблицы в распарсенном виде.</p>
+<dl class="method">
+<dt id="spiders.insider_trades.ParsedRow.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/spiders/insider_trades.html#ParsedRow.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.insider_trades.ParsedRow.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Прокси для приватного метода <cite>_asdict</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">именнованный кортеж, преобразованный в словарь</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="spiders.insider_trades.ParsedRow.from_raw_row">
+<em class="property">static </em><code class="descname">from_raw_row</code><span class="sig-paren">(</span><em>raw_row: spiders.insider_trades.RawRow</em><span class="sig-paren">)</span> &#x2192; spiders.insider_trades.ParsedRow<a class="reference internal" href="_modules/spiders/insider_trades.html#ParsedRow.from_raw_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.insider_trades.ParsedRow.from_raw_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Метод, получающий из “сырых” данных обработанные.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>raw_row</strong> – именнованный кортеж с нужными нам данными в сыром виде</li>
+<li><strong>symbol</strong> – название акции (“символ”), к которым относятся эти данные</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">именнованный кортеж с нужными данными в нужном формате, готовыми к отправке “наружу”</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.insider_id">
+<code class="descname">insider_id</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.insider_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.insider_name">
+<code class="descname">insider_name</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.insider_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.last_date">
+<code class="descname">last_date</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.last_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.last_price">
+<code class="descname">last_price</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.last_price" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.owner_type">
+<code class="descname">owner_type</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.owner_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.relation">
+<code class="descname">relation</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.shares_held">
+<code class="descname">shares_held</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.shares_held" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.shares_traded">
+<code class="descname">shares_traded</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.shares_traded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.symbol">
+<code class="descname">symbol</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.ParsedRow.transaction_type">
+<code class="descname">transaction_type</code><a class="headerlink" href="#spiders.insider_trades.ParsedRow.transaction_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spiders.insider_trades.RawRow">
+<em class="property">class </em><code class="descclassname">spiders.insider_trades.</code><code class="descname">RawRow</code><a class="reference internal" href="_modules/spiders/insider_trades.html#RawRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.insider_trades.RawRow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Именнованный кортеж для хранения строки таблицы в “сыром виде”.</p>
+<dl class="staticmethod">
+<dt id="spiders.insider_trades.RawRow.from_selector">
+<em class="property">static </em><code class="descname">from_selector</code><span class="sig-paren">(</span><em>selector: scrapy.selector.unified.Selector</em>, <em>symbol: str</em><span class="sig-paren">)</span> &#x2192; spiders.insider_trades.RawRow<a class="reference internal" href="_modules/spiders/insider_trades.html#RawRow.from_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.insider_trades.RawRow.from_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Метод, получающий из селектора именнованный кортеж с нужными нам значениями.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>selector</strong> – селектор, из которого можно получить строку таблицы</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">результат парсинга этой строки таблицы</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.insider_id">
+<code class="descname">insider_id</code><a class="headerlink" href="#spiders.insider_trades.RawRow.insider_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.insider_name">
+<code class="descname">insider_name</code><a class="headerlink" href="#spiders.insider_trades.RawRow.insider_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.last_date">
+<code class="descname">last_date</code><a class="headerlink" href="#spiders.insider_trades.RawRow.last_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.last_price">
+<code class="descname">last_price</code><a class="headerlink" href="#spiders.insider_trades.RawRow.last_price" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.owner_type">
+<code class="descname">owner_type</code><a class="headerlink" href="#spiders.insider_trades.RawRow.owner_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.relation">
+<code class="descname">relation</code><a class="headerlink" href="#spiders.insider_trades.RawRow.relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.shares_held">
+<code class="descname">shares_held</code><a class="headerlink" href="#spiders.insider_trades.RawRow.shares_held" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.shares_traded">
+<code class="descname">shares_traded</code><a class="headerlink" href="#spiders.insider_trades.RawRow.shares_traded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.symbol">
+<code class="descname">symbol</code><a class="headerlink" href="#spiders.insider_trades.RawRow.symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spiders.insider_trades.RawRow.transaction_type">
+<code class="descname">transaction_type</code><a class="headerlink" href="#spiders.insider_trades.RawRow.transaction_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-spiders">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-spiders" title="Permalink to this headline">¶</a></h2>
+<p>Модуль, содержащий “пауков” для Scrapy.</p>
+<dl class="class">
+<dt id="spiders.HistoricalPricesSpider">
+<em class="property">class </em><code class="descclassname">spiders.</code><code class="descname">HistoricalPricesSpider</code><span class="sig-paren">(</span><em>symbols: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spiders/historical_prices.html#HistoricalPricesSpider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.HistoricalPricesSpider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spiders.base.BaseSpider" title="spiders.base.BaseSpider"><code class="xref py py-class docutils literal notranslate"><span class="pre">spiders.base.BaseSpider</span></code></a></p>
+<p>“Паук”, для получения данных об исторических ценах.</p>
+<dl class="attribute">
+<dt id="spiders.HistoricalPricesSpider.name">
+<code class="descname">name</code><em class="property"> = 'historical_prices'</em><a class="headerlink" href="#spiders.HistoricalPricesSpider.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spiders.HistoricalPricesSpider.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><em>response: scrapy.http.response.Response</em><span class="sig-paren">)</span> &#x2192; Iterator[Dict]<a class="reference internal" href="_modules/spiders/historical_prices.html#HistoricalPricesSpider.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.HistoricalPricesSpider.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Обработчик http ответа от сайта.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>response</strong> – ответ, получаемый из Scrapy</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">итератор по словарям с результатами парсинга таблицы с нужными данными</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spiders.HistoricalPricesSpider.start_requests">
+<code class="descname">start_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterator[scrapy.http.request.Request]<a class="reference internal" href="_modules/spiders/historical_prices.html#HistoricalPricesSpider.start_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.HistoricalPricesSpider.start_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Итератор по первоначальным запросам.</p>
+<p>Делает запрос к странице с историческими ценам для каждой переданной акции.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spiders.InsiderTradesSpider">
+<em class="property">class </em><code class="descclassname">spiders.</code><code class="descname">InsiderTradesSpider</code><span class="sig-paren">(</span><em>symbols: List[str], *args, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spiders/insider_trades.html#InsiderTradesSpider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.InsiderTradesSpider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spiders.base.BaseSpider" title="spiders.base.BaseSpider"><code class="xref py py-class docutils literal notranslate"><span class="pre">spiders.base.BaseSpider</span></code></a></p>
+<p>“Паук”, для получения данных о торгах инсайдеров.</p>
+<dl class="attribute">
+<dt id="spiders.InsiderTradesSpider.name">
+<code class="descname">name</code><em class="property"> = 'insider_trades'</em><a class="headerlink" href="#spiders.InsiderTradesSpider.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spiders.InsiderTradesSpider.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><em>response: scrapy.http.response.Response</em><span class="sig-paren">)</span> &#x2192; Iterator[Union[scrapy.http.request.Request, typing.Dict]]<a class="reference internal" href="_modules/spiders/insider_trades.html#InsiderTradesSpider.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.InsiderTradesSpider.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Обработчик http ответа от сайта.</p>
+<p>Парсит таблицы с данными и делает запросы к следующим страницам.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>response</strong> – ответ, получаемый из Scrapy</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">итератор по словарям с результатами парсинга и по запросам к следующим страницам</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spiders.InsiderTradesSpider.start_requests">
+<code class="descname">start_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterator[scrapy.http.request.Request]<a class="reference internal" href="_modules/spiders/insider_trades.html#InsiderTradesSpider.start_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spiders.InsiderTradesSpider.start_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Итератор по первоначальным запросам.</p>
+<p>Делает запрос к странице с историческими ценам для каждой переданной акции.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">nasdaq_analytics</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="common.html">common module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">config module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">db package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="historical_prices.html">historical_prices module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="insider_trades.html">insider_trades module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">spiders package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-spiders.base">spiders.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-spiders.common">spiders.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-spiders.historical_prices">spiders.historical_prices module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-spiders.insider_trades">spiders.insider_trades module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-spiders">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">views package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="web.html">web module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="insider_trades.html" title="previous chapter">insider_trades module</a></li>
+      <li>Next: <a href="views.html" title="next chapter">views package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/spiders.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

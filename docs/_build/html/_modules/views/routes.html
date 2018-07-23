@@ -1,0 +1,519 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>views.routes &#8212; nasdaq_analytics  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for views.routes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Маршруты для веб-интерфейса и API.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">dateutil.relativedelta</span> <span class="k">import</span> <span class="n">relativedelta</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">abort</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span> <span class="n">asc</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">func</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="k">import</span> <span class="n">joinedload</span>
+
+<span class="kn">from</span> <span class="nn">common</span> <span class="k">import</span> <span class="n">canonize_symbol</span>
+<span class="kn">from</span> <span class="nn">db</span> <span class="k">import</span> <span class="n">session</span><span class="p">,</span> <span class="n">Ticker</span><span class="p">,</span> <span class="n">InsiderTrade</span><span class="p">,</span> <span class="n">HistoricalPrice</span>
+<span class="kn">from</span> <span class="nn">.helpers</span> <span class="k">import</span> <span class="n">views_helper</span>
+<span class="kn">from</span> <span class="nn">.schemas</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">tickers_list_schema</span><span class="p">,</span> <span class="n">historical_prices_schema</span><span class="p">,</span> <span class="n">insider_trades_schema</span><span class="p">,</span> <span class="n">analytics_schema</span><span class="p">,</span> <span class="n">delta_schema</span><span class="p">,</span> <span class="n">types_enum</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="index"><a class="viewcode-back" href="../../views.html#views.routes.index">[docs]</a><span class="nd">@views_helper</span><span class="o">.</span><span class="n">route</span><span class="p">(</span>
+    <span class="s1">&#39;/&#39;</span><span class="p">,</span>
+    <span class="n">template_name</span><span class="o">=</span><span class="s1">&#39;index.html&#39;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="n">tickers_list_schema</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Получить список всех акций, доступных в базе данных.&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Функция, возвращающая списко всех акций в базе.</span>
+
+<span class="sd">    :return: словарь, содержащий список всех акций в базе</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;tickers&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">ticker</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Ticker</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Ticker</span><span class="o">.</span><span class="n">symbol</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="p">]</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="historical_prices"><a class="viewcode-back" href="../../views.html#views.routes.historical_prices">[docs]</a><span class="nd">@views_helper</span><span class="o">.</span><span class="n">route</span><span class="p">(</span>
+    <span class="s1">&#39;/&lt;string:symbol&gt;&#39;</span><span class="p">,</span>
+    <span class="n">template_name</span><span class="o">=</span><span class="s1">&#39;historical_prices.html&#39;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="n">historical_prices_schema</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;symbol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Получить цены на акцию за 3 месяца.&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">historical_prices</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Функция, возвращающая цены на акцию за 3 месяца.</span>
+
+<span class="sd">    :param symbol: название акции</span>
+<span class="sd">    :return: словарь, содержащий название акции и цена за 3 месяца</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canonical_symbol</span> <span class="o">=</span> <span class="n">canonize_symbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">symbol</span> <span class="o">!=</span> <span class="n">canonical_symbol</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">canonical_symbol</span><span class="p">),</span> <span class="mi">301</span><span class="p">))</span>
+
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Ticker</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">Ticker</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="n">symbol</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">ticker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="n">ticker</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+        <span class="s1">&#39;historical_prices&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">historical_price</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s1">&#39;open&#39;</span><span class="p">:</span> <span class="n">historical_price</span><span class="o">.</span><span class="n">open</span><span class="p">,</span>
+                <span class="s1">&#39;high&#39;</span><span class="p">:</span> <span class="n">historical_price</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+                <span class="s1">&#39;low&#39;</span><span class="p">:</span> <span class="n">historical_price</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+                <span class="s1">&#39;close&#39;</span><span class="p">:</span> <span class="n">historical_price</span><span class="o">.</span><span class="n">close</span><span class="p">,</span>
+                <span class="s1">&#39;volume&#39;</span><span class="p">:</span> <span class="n">historical_price</span><span class="o">.</span><span class="n">volume</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">historical_price</span> <span class="ow">in</span> <span class="n">ticker</span><span class="o">.</span><span class="n">historical_price_ordered_by_date</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">HistoricalPrice</span><span class="o">.</span><span class="n">date</span> <span class="o">&gt;=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">relativedelta</span><span class="p">(</span><span class="n">months</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="insider_trades"><a class="viewcode-back" href="../../views.html#views.routes.insider_trades">[docs]</a><span class="nd">@views_helper</span><span class="o">.</span><span class="n">route</span><span class="p">(</span>
+    <span class="s1">&#39;/&lt;string:symbol&gt;/insider&#39;</span><span class="p">,</span>
+    <span class="n">template_name</span><span class="o">=</span><span class="s1">&#39;insider_trades.html&#39;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="n">insider_trades_schema</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;symbol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Получить данные о торгах инсайдеров.&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">insider_trades</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Функция, возвращающая данные о торгах инсайдеров за 3 месяца.</span>
+
+<span class="sd">    :param symbol: название акции</span>
+<span class="sd">    :return: словарь, содержащий название акции и данные о торгах инсайдеров</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canonical_symbol</span> <span class="o">=</span> <span class="n">canonize_symbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">symbol</span> <span class="o">!=</span> <span class="n">canonical_symbol</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">canonical_symbol</span><span class="p">),</span> <span class="mi">301</span><span class="p">))</span>
+
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Ticker</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span>
+        <span class="n">joinedload</span><span class="p">(</span><span class="n">Ticker</span><span class="o">.</span><span class="n">insider_trades_ordered_by_date</span><span class="p">,</span> <span class="n">InsiderTrade</span><span class="o">.</span><span class="n">insider</span><span class="p">),</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">Ticker</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="n">symbol</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="n">ticker</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+        <span class="s1">&#39;insider_trades&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;insider_name&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">insider</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;relation&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">relation</span><span class="p">,</span>
+                <span class="s1">&#39;last_date&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">last_date</span><span class="p">,</span>
+                <span class="s1">&#39;transaction_type&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">transaction_type</span><span class="p">,</span>
+                <span class="s1">&#39;owner_type&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">owner_type</span><span class="p">,</span>
+                <span class="s1">&#39;shares_traded&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">shares_traded</span><span class="p">,</span>
+                <span class="s1">&#39;last_price&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">last_price</span><span class="p">,</span>
+                <span class="s1">&#39;shares_held&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">shares_held</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">insider_trade</span> <span class="ow">in</span> <span class="n">ticker</span><span class="o">.</span><span class="n">insider_trades_ordered_by_date</span>
+        <span class="p">]</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="insider_trades_by_insider_name"><a class="viewcode-back" href="../../views.html#views.routes.insider_trades_by_insider_name">[docs]</a><span class="nd">@views_helper</span><span class="o">.</span><span class="n">route</span><span class="p">(</span>
+    <span class="s1">&#39;/&lt;string:symbol&gt;/insider/&lt;string:insider_name&gt;&#39;</span><span class="p">,</span>
+    <span class="n">template_name</span><span class="o">=</span><span class="s1">&#39;insider_trades_for_insider.html&#39;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="n">insider_trades_schema</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;symbol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;insider_name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Получить данные о торгах инсайдера.&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">insider_trades_by_insider_name</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">insider_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Функция, возвращающая данные о торгах конкретного инсайдера.</span>
+
+<span class="sd">    :param symbol: название акции</span>
+<span class="sd">    :param insider_name: имя инсайдера</span>
+<span class="sd">    :return: словарь, содержащий название акции, имя инсайдера и данные о торгах инсайдеров</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canonical_symbol</span> <span class="o">=</span> <span class="n">canonize_symbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">symbol</span> <span class="o">!=</span> <span class="n">canonical_symbol</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">canonical_symbol</span><span class="p">,</span> <span class="n">insider_name</span><span class="o">=</span><span class="n">insider_name</span><span class="p">),</span> <span class="mi">301</span><span class="p">))</span>
+
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Ticker</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">Ticker</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="n">symbol</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">ticker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">InsiderTrade</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span>
+        <span class="n">joinedload</span><span class="p">(</span><span class="n">InsiderTrade</span><span class="o">.</span><span class="n">insider</span><span class="p">),</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">InsiderTrade</span><span class="o">.</span><span class="n">ticker_id</span> <span class="o">==</span> <span class="n">Ticker</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">InsiderTrade</span><span class="o">.</span><span class="n">insider</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">insider_name</span><span class="p">),</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">InsiderTrade</span><span class="o">.</span><span class="n">last_date</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="n">ticker</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+        <span class="s1">&#39;insider_name&#39;</span><span class="p">:</span> <span class="n">insider_name</span><span class="p">,</span>
+        <span class="s1">&#39;insider_trades&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;insider_name&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">insider</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;relation&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">relation</span><span class="p">,</span>
+                <span class="s1">&#39;last_date&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">last_date</span><span class="p">,</span>
+                <span class="s1">&#39;transaction_type&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">transaction_type</span><span class="p">,</span>
+                <span class="s1">&#39;owner_type&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">owner_type</span><span class="p">,</span>
+                <span class="s1">&#39;shares_traded&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">shares_traded</span><span class="p">,</span>
+                <span class="s1">&#39;last_price&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">last_price</span><span class="p">,</span>
+                <span class="s1">&#39;shares_held&#39;</span><span class="p">:</span> <span class="n">insider_trade</span><span class="o">.</span><span class="n">shares_held</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">insider_trade</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="p">]</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="analytics"><a class="viewcode-back" href="../../views.html#views.routes.analytics">[docs]</a><span class="nd">@views_helper</span><span class="o">.</span><span class="n">route</span><span class="p">(</span>
+    <span class="s1">&#39;/&lt;string:symbol&gt;/analytics&#39;</span><span class="p">,</span>
+    <span class="n">template_name</span><span class="o">=</span><span class="s1">&#39;analytics.html&#39;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="n">analytics_schema</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;symbol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;date_from&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;query&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pattern&#39;</span><span class="p">:</span> <span class="s1">&#39;[0-9]</span><span class="si">{4}</span><span class="s1">-[0-9]</span><span class="si">{2}</span><span class="s1">-[0-9]</span><span class="si">{2}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;date_to&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;query&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pattern&#39;</span><span class="p">:</span> <span class="s1">&#39;[0-9]</span><span class="si">{4}</span><span class="s1">-[0-9]</span><span class="si">{2}</span><span class="s1">-[0-9]</span><span class="si">{2}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Получить аналитические данные об акции.&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">analytics</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Функция, возвращающая данные о разнице цен в заданных датах.</span>
+
+<span class="sd">    :param symbol: название акции</span>
+<span class="sd">    :return: словарь, содержащий аналитические данные об акции</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canonical_symbol</span> <span class="o">=</span> <span class="n">canonize_symbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">symbol</span> <span class="o">!=</span> <span class="n">canonical_symbol</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">canonical_symbol</span><span class="p">,</span> <span class="o">**</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">),</span> <span class="mi">301</span><span class="p">))</span>
+
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Ticker</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">Ticker</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="n">symbol</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">ticker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="n">date_from_arg</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;date_from&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">date_to_arg</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;date_to&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="n">date_from</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">date_from</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_from_arg</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">date_from</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">date_to</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">date_to</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_to_arg</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">date_to</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">date_from</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">date_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">date_from</span> <span class="o">&gt;</span> <span class="n">date_to</span><span class="p">:</span>
+        <span class="n">date_to</span><span class="p">,</span> <span class="n">date_from</span> <span class="o">=</span> <span class="n">date_from</span><span class="p">,</span> <span class="n">date_to</span>
+
+    <span class="n">historical_price_from_query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">HistoricalPrice</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">HistoricalPrice</span><span class="o">.</span><span class="n">ticker_id</span> <span class="o">==</span> <span class="n">ticker</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">date_from</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">historical_price_from_query</span> <span class="o">=</span> <span class="n">historical_price_from_query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+            <span class="n">asc</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">HistoricalPrice</span><span class="o">.</span><span class="n">date</span> <span class="o">-</span> <span class="n">date_from</span><span class="p">)),</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">historical_price_from_query</span> <span class="o">=</span> <span class="n">historical_price_from_query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+            <span class="n">asc</span><span class="p">(</span><span class="n">HistoricalPrice</span><span class="o">.</span><span class="n">date</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="n">historical_price_from</span> <span class="o">=</span> <span class="n">historical_price_from_query</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">historical_price_from_query</span><span class="p">)</span>
+
+    <span class="n">historical_price_to_query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">HistoricalPrice</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">HistoricalPrice</span><span class="o">.</span><span class="n">ticker_id</span> <span class="o">==</span> <span class="n">ticker</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">date_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">historical_price_to_query</span> <span class="o">=</span> <span class="n">historical_price_to_query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+            <span class="n">asc</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">HistoricalPrice</span><span class="o">.</span><span class="n">date</span> <span class="o">-</span> <span class="n">date_to</span><span class="p">)),</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">historical_price_to_query</span> <span class="o">=</span> <span class="n">historical_price_to_query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span>
+            <span class="n">desc</span><span class="p">(</span><span class="n">HistoricalPrice</span><span class="o">.</span><span class="n">date</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="n">historical_price_to</span> <span class="o">=</span> <span class="n">historical_price_to_query</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">historical_price_to_query</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">historical_price_from</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">historical_price_to</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="n">date_from_iso</span> <span class="o">=</span> <span class="n">historical_price_from</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="n">date_to_iso</span> <span class="o">=</span> <span class="n">historical_price_to</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">date_from_iso</span> <span class="o">!=</span> <span class="n">date_from_arg</span> <span class="ow">or</span> <span class="n">date_to_iso</span> <span class="o">!=</span> <span class="n">date_to_arg</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span>
+            <span class="n">symbol</span><span class="o">=</span><span class="n">canonical_symbol</span><span class="p">,</span>
+            <span class="n">date_from</span><span class="o">=</span><span class="n">date_from_iso</span><span class="p">,</span>
+            <span class="n">date_to</span><span class="o">=</span><span class="n">date_to_iso</span><span class="p">,</span>
+        <span class="p">),</span> <span class="mi">302</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="n">ticker</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+        <span class="s1">&#39;date_from&#39;</span><span class="p">:</span> <span class="n">date_from_iso</span><span class="p">,</span>
+        <span class="s1">&#39;date_to&#39;</span><span class="p">:</span> <span class="n">date_to_iso</span><span class="p">,</span>
+        <span class="s1">&#39;open_delta&#39;</span><span class="p">:</span> <span class="n">historical_price_to</span><span class="o">.</span><span class="n">open</span> <span class="o">-</span> <span class="n">historical_price_from</span><span class="o">.</span><span class="n">open</span><span class="p">,</span>
+        <span class="s1">&#39;high_delta&#39;</span><span class="p">:</span> <span class="n">historical_price_to</span><span class="o">.</span><span class="n">high</span> <span class="o">-</span> <span class="n">historical_price_from</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+        <span class="s1">&#39;low_delta&#39;</span><span class="p">:</span> <span class="n">historical_price_to</span><span class="o">.</span><span class="n">low</span> <span class="o">-</span> <span class="n">historical_price_from</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+        <span class="s1">&#39;close_delta&#39;</span><span class="p">:</span> <span class="n">historical_price_to</span><span class="o">.</span><span class="n">close</span> <span class="o">-</span> <span class="n">historical_price_from</span><span class="o">.</span><span class="n">close</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="delta"><a class="viewcode-back" href="../../views.html#views.routes.delta">[docs]</a><span class="nd">@views_helper</span><span class="o">.</span><span class="n">route</span><span class="p">(</span>
+    <span class="s1">&#39;/&lt;string:symbol&gt;/delta&#39;</span><span class="p">,</span>
+    <span class="n">template_name</span><span class="o">=</span><span class="s1">&#39;delta.html&#39;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="n">delta_schema</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;symbol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;path&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;query&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="s1">&#39;query&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="n">types_enum</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Получить аналитические данные о минимальных периодах, когда цена изменилась больше, чем на N.&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">delta</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Функция, возвращающая данные о минимальных периодах, когда цена изменилась больше, чем на N.</span>
+
+<span class="sd">    :param symbol: название акции</span>
+<span class="sd">    :return: словарь, содержащий данные о минимальных периодах, когда цена изменилась больше, чем на N</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canonical_symbol</span> <span class="o">=</span> <span class="n">canonize_symbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">symbol</span> <span class="o">!=</span> <span class="n">canonical_symbol</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">canonical_symbol</span><span class="p">,</span> <span class="o">**</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">),</span> <span class="mi">301</span><span class="p">))</span>
+
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Ticker</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">Ticker</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="n">symbol</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">ticker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">value_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">value_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">types_enum</span><span class="p">:</span>
+        <span class="n">value_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">value_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="n">ticker</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+            <span class="s1">&#39;min_duration&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">value_type</span><span class="p">,</span>
+            <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="n">intervals</span> <span class="o">=</span> <span class="n">HistoricalPrice</span><span class="o">.</span><span class="n">get_intervals</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="n">ticker</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+        <span class="s1">&#39;min_duration&#39;</span><span class="p">:</span> <span class="n">intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="k">if</span> <span class="n">intervals</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">value_type</span><span class="p">,</span>
+        <span class="s1">&#39;delta&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+        <span class="s1">&#39;intervals&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;date_from&#39;</span><span class="p">:</span> <span class="n">interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s1">&#39;date_to&#39;</span><span class="p">:</span> <span class="n">interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s1">&#39;delta&#39;</span><span class="p">:</span> <span class="n">interval</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="n">intervals</span>
+        <span class="p">]</span>
+    <span class="p">}</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">nasdaq_analytics</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../common.html">common module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">config module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../db.html">db package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../historical_prices.html">historical_prices module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../insider_trades.html">insider_trades module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spiders.html">spiders package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../views.html">views package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../web.html">web module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../views.html">views</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

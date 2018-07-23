@@ -1,0 +1,141 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>historical_prices module &#8212; nasdaq_analytics  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="insider_trades module" href="insider_trades.html" />
+    <link rel="prev" title="db package" href="db.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-historical_prices">
+<span id="historical-prices-module"></span><h1>historical_prices module<a class="headerlink" href="#module-historical_prices" title="Permalink to this headline">¶</a></h1>
+<p>Модуль, содержащий функции для получения исторических цен с NASDAQ.</p>
+<p>Если его вызвать как скрипт, то он получит данные и сохранит их в базу.</p>
+<dl class="function">
+<dt id="historical_prices.get_historical_prices">
+<code class="descclassname">historical_prices.</code><code class="descname">get_historical_prices</code><span class="sig-paren">(</span><em>tmp_file: IO</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/historical_prices.html#get_historical_prices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#historical_prices.get_historical_prices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Получить исторические цены с NASDAQ и сохранить их в файл.</p>
+<p>Данные сохраняются в формате jsonlines - по одному json-объекту в каждой строке.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tmp_file</strong> – временный файл, куда полученные данные будут сохранены в формате jsonlines</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="historical_prices.save_historical_prices">
+<code class="descclassname">historical_prices.</code><code class="descname">save_historical_prices</code><span class="sig-paren">(</span><em>tmp_file: IO</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/historical_prices.html#save_historical_prices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#historical_prices.save_historical_prices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Прочитать исторические данные из файла и сохранить их в базу.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tmp_file</strong> – временный файл, откуда откуда будут прочитаны данные и сохранены в файл</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">nasdaq_analytics</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="common.html">common module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">config module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">db package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">historical_prices module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="insider_trades.html">insider_trades module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spiders.html">spiders package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">views package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="web.html">web module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="db.html" title="previous chapter">db package</a></li>
+      <li>Next: <a href="insider_trades.html" title="next chapter">insider_trades module</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/historical_prices.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
