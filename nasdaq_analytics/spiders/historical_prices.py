@@ -13,6 +13,7 @@ from .common import only_numbers
 
 class RawRow(NamedTuple):
     """Именнованный кортеж для хранения строки таблицы в "сыром виде"."""
+
     date: str
     open: str
     high: str
@@ -32,6 +33,7 @@ class RawRow(NamedTuple):
 
 class ParsedRow(NamedTuple):
     """Именнованный кортеж, для хранения строки таблицы в распарсенном виде."""
+
     date: str
     open: float
     high: float
@@ -67,7 +69,8 @@ class ParsedRow(NamedTuple):
 
 
 class HistoricalPricesSpider(BaseSpider):
-    """"Паук", для получения данных об исторических ценах."""
+    """'Паук', для получения данных об исторических ценах."""
+
     name = 'historical_prices'
 
     def start_requests(self) -> Iterator[Request]:

@@ -1,4 +1,4 @@
-"""Модуль, содержащий схемы в формате jsonschema"""
+"""Модуль, содержащий схемы в формате jsonschema."""
 
 tickers_list_schema = {
     'type': 'object',

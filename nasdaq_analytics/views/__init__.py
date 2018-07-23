@@ -2,9 +2,7 @@
 from flask import Flask
 
 from .helpers import views_helper
-from .routes import (
-    index, historical_prices, insider_trades, insider_trades_by_insider_name, analytics, delta,
-)
+from .routes import *  # noqa
 
 
 def init_app(app: Flask) -> None:

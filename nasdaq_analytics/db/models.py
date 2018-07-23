@@ -12,6 +12,7 @@ from . import Base, session
 
 class Ticker(Base):  # type: ignore
     """Акция."""
+
     __tablename__ = 'ticker'
 
     #: исторические цены на эту акцию, отсортированные по дате
@@ -50,6 +51,7 @@ class Ticker(Base):  # type: ignore
 
 class HistoricalPrice(Base):  # type: ignore
     """Исторические цены на акцию."""
+
     __tablename__ = 'historical_price'
 
     @staticmethod
@@ -102,12 +104,14 @@ class HistoricalPrice(Base):  # type: ignore
 
 class InsiderTuple(NamedTuple):
     """Именнованный кортеж, содержащий данные об инсайдере."""
+
     id: str
     name: str
 
 
 class Insider(Base):  # type: ignore
     """Инсайдер."""
+
     __tablename__ = 'insider'
 
     @staticmethod
@@ -127,6 +131,7 @@ class Insider(Base):  # type: ignore
 
 class InsiderTrade(Base):  # type: ignore
     """Данные об инсайдерских торгах."""
+
     __tablename__ = 'insider_trade'
 
     @staticmethod

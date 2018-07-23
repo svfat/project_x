@@ -19,6 +19,7 @@ MAX_PAGE: int = 10
 
 class RawRow(NamedTuple):
     """Именнованный кортеж для хранения строки таблицы в "сыром виде"."""
+
     insider_name: str
     insider_id: str
     relation: Optional[str]
@@ -59,6 +60,7 @@ class RawRow(NamedTuple):
 
 class ParsedRow(NamedTuple):
     """Именнованный кортеж, для хранения строки таблицы в распарсенном виде."""
+
     insider_name: str
     insider_id: str
     relation: Optional[str]
@@ -102,7 +104,8 @@ class ParsedRow(NamedTuple):
 
 
 class InsiderTradesSpider(BaseSpider):
-    """"Паук", для получения данных о торгах инсайдеров."""
+    """'Паук', для получения данных о торгах инсайдеров."""
+
     name = 'insider_trades'
 
     def start_requests(self) -> Iterator[Request]:
