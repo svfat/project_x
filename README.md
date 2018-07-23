@@ -13,7 +13,7 @@
 - `POSTGRES_USER` - пользователь, для подключения к БД
 - `POSTGRES_PASSWORD` - пароль, для подключения к БД
 - `CONCURRENT_REQUESTS` - максимальное количество параллельных запросов, по умолчанию - 16
-- `TICKERS_FILE` - путь к файлу `tickers.txt`, по умолчанию - `/var/input/tickers.txt`.
+- `TICKERS_FILE` - путь к файлу `tickers.txt`, по умолчанию - `/var/input/tickers.txt`
 
 ### С помощью docker-compose
 
